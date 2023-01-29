@@ -1,18 +1,8 @@
-import Dices from './dices/dices';
+import { Dices } from './dices';
 import { GameEngine } from './engines';
 import Player from './player';
 import Piece from './piece';
 
-
-function gameIsGoing(target: Game, propertyKey: string, descriptor: PropertyDescriptor) {
-	const originalMethod = descriptor.value;
-	descriptor.value = function (...args: any[]) {
-		if (target.HasStarted() === false) {
-			throw new Error('Game is not started');
-		}
-		return originalMethod.apply(this, args);
-	}
-}
 class Game {
 	constructor(engine: GameEngine, randomizer: Dices) {
 		this.randomizer = randomizer;
@@ -35,6 +25,7 @@ class Game {
 	}
 
 	HasStarted(): boolean {
+		console.log(this);
 		return this.currentPlayer !== null;
 	}
 
@@ -45,8 +36,14 @@ class Game {
 		return [fR, sR, this.currentPlayer];
 	}
 
-	@gameIsGoing
+	private isGameGoing() {
+		if (this.currentPlayer === null) {
+			throw new Error('Game is not started');
+		}
+	}
+
 	GetDiceResults(): [number, number] {
+		this.isGameGoing();
 		if (this.diceResults[0] === 0 && this.diceResults[1] === 0) {
 			this.diceResults = this.randomizer.getTwoDices();
 			return this.diceResults;
@@ -54,13 +51,15 @@ class Game {
 		return this.diceResults;
 	};
 
-	@gameIsGoing
 	GetValidMoves(): Array<number> {
+		this.isGameGoing();
 		return [];
 	}
 
-	@gameIsGoing
 	MakeMove(from: number, to: number): boolean {
+		this.isGameGoing();
 		return false;
 	}
 }
+
+export default Game;
