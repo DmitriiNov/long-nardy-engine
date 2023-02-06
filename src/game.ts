@@ -2,6 +2,11 @@ import { Dices } from './dices';
 import { GameEngine } from './engines';
 import Player from './player';
 import { Board, Move }  from './heplers';
+
+
+class TurnState {
+
+}
 class Game {
 	constructor(engine: GameEngine, randomizer: Dices) {
 		this.randomizer = randomizer;
@@ -28,6 +33,10 @@ class Game {
 	HasStarted(): boolean {
 		console.log(this);
 		return this.currentPlayer !== null;
+	}
+
+	getPlayers(): [Player, Player] {
+		return [this.player1, this.player2];
 	}
 
 	Start(): [number, number, Player] {
@@ -80,4 +89,4 @@ class Game {
 	}
 }
 
-export default Game;
+export { Game, TurnState };

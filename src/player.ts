@@ -3,6 +3,10 @@ class Player {
 		this.num = num;
 	}
 	num: number;
+
+	on (event: string, callback: Function) {
+		// TODO
+	}
 }
 
 export default Player;

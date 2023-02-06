@@ -1,5 +1,5 @@
-import Game from "../game";
-import {Board, Move} from "../heplers";
+import { Game } from "../game";
+import { Board, Move } from "../heplers";
 import Player from "../player";
 
 interface GameEngine {
