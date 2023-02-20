@@ -1,12 +1,9 @@
+
 class Player {
-	constructor(num: number) {
-		this.num = num;
+	constructor(isFirst: boolean) {
+		this.isFirst = isFirst;
 	}
-	num: number;
+	isFirst: boolean;
+};
 
-	on (event: string, callback: Function) {
-		// TODO
-	}
-}
-
-export default Player;
+export { Player };
