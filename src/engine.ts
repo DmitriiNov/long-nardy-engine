@@ -1,15 +1,21 @@
-import { GameState, MoveState } from "./states";
-
+import { Game } from "./game";
+import { Board } from "./board";
+import { MoveState } from "./states";
 class Engine {
-	constructor() {
-		console.log('Engine constructor');
-		this.gameState = new GameState();
-		this.moveState = new MoveState();
-  	}
+	constructor(game: Game) {
+		this.game = game;
+	}
 
-	gameState: GameState;
-	moveState: MoveState;
-	
+	private game: Game;
+
+	GetMovesTree(moveState: MoveState, board: Board): Array<Array<[number, number]>> {
+		return [[[0, 0]]];
+	}
+
+	Move(move: [number, number]): boolean {
+		const movesTree = this.GetMovesTree(this.game.GetCurrentMoveState(), this.game.GetBoard());
+		return true;
+	}
 }
 
 export { Engine };

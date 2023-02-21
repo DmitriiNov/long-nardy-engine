@@ -1,11 +1,16 @@
 import { Player } from "./player";
 import { GameState, MoveState } from "./states";
+import { Engine } from "./engine"
+import { Board } from "./board";
+import { platform } from "os";
 class Game {
 	constructor() {
-		console.log(1)
+		this.engine = new Engine(this);
 	}
-	gameState: GameState | null = null;
-	moveState: MoveState | null = null;
+ 
+	private gameState: GameState | null = null;
+	private moveState: MoveState | null = null;
+	private engine: Engine;
 
 	InitGame(): [number, number] {
 		const diceResult = this.getRandomDiffDices();
@@ -27,6 +32,50 @@ class Game {
 			throw new Error("Game not initialized");
 		}
 		return this.moveState.currentPlayer;
+	}
+
+	IsMoveEnded(): boolean {
+		if (this.moveState === null || this.gameState === null) {
+			throw new Error("Game or Move not initialized");
+		}
+		if (this.moveState.remainingMoves.length === 0)
+			return true;
+		if (this.engine.GetMovesTree(this.moveState, this.gameState.board).length === 0)
+			return true;
+		return false;
+	}
+
+	Move(move: [number, number]): boolean {
+		if (this.gameState === null || this.moveState === null) {
+			throw new Error("Game or Move not initialized");
+		}
+		const isDone = this.engine.Move(move);
+		return isDone;
+	}
+
+	GetBoard(): Board {
+		if (this.gameState === null) {
+			throw new Error("Game not initialized");
+		}
+		return this.gameState.board;
+	}
+
+	GetCurrentMoveState(): MoveState {
+		if (this.moveState === null) {
+			throw new Error("Game not initialized");
+		}
+		return this.moveState;
+	}
+
+	InitMove(dices: [number, number] | null) {
+		if (this.gameState === null) {
+			throw new Error("Game not initialized");
+		}
+		let currPlayer = this.gameState.player1.isFirst ? this.gameState.player1 : this.gameState.player2;
+		if (this.moveState !== null) {
+			currPlayer = this.moveState.currentPlayer;
+		}
+		this.moveState = new MoveState(this.moveState === null ? 1 : this.moveState.moveNumber + 1, currPlayer, dices);
 	}
 
 	private getRandomDiffDices(): [number, number] {
