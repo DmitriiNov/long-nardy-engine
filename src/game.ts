@@ -71,6 +71,9 @@ class Game {
 		if (this.gameState === null) {
 			throw new Error("Game not initialized");
 		}
+		if (!this.IsMoveEnded()) {
+			throw new Error("Previous move not ended");
+		}
 		let currPlayer = this.gameState.player1.isFirst ? this.gameState.player1 : this.gameState.player2;
 		if (this.moveState !== null) {
 			currPlayer = this.moveState.currentPlayer;
