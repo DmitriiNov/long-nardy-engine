@@ -13,7 +13,7 @@ class GameState {
 }
 
 class MoveState {
-	constructor(num: number, player: Player, dices: [number, number] | null) {
+	constructor(num: number, player: Player, dices: [number, number] | null, remainingMoves: Array<number> | null, doneMoves: Array<[number, number]> | null) {
 		this.moveNumber = num;
 		this.currentPlayer = player
 		if (dices !== null) {
@@ -23,13 +23,32 @@ class MoveState {
 		if (this.dices[0] === this.dices[1]) {
 			this.remainingMoves.push(this.dices[0], this.dices[1]);
 		}
+		if (remainingMoves !== null) {
+			this.remainingMoves = remainingMoves;
+		}
+		if (doneMoves !== null) {
+			this.doneMoves = doneMoves;
+		}
 	}
 
-	moveNumber: number;
-	currentPlayer: Player;
-	dices: [number, number] = [this.getRandomDice(), this.getRandomDice()];
-	remainingMoves: Array<number>;
-	doneMoves: Array<[number, number]> = [];
+	readonly moveNumber: number;
+	readonly currentPlayer: Player;
+	readonly dices: [number, number] = [this.getRandomDice(), this.getRandomDice()];
+	readonly remainingMoves: Array<number>;
+	readonly doneMoves: Array<[number, number]> = [];
+
+	removeFromRemainingMoves(move: number): boolean {
+		const index = this.remainingMoves.indexOf(move);
+		if (index === -1) {
+			return false;
+		}
+		this.remainingMoves.splice(index, 1);
+		return true;
+	}
+
+	addMove(move: [number, number]): void {
+		this.doneMoves.push(move);
+	}
 
 	getRandomDice(): number {
 		return Math.floor(Math.random() * 6) + 1;

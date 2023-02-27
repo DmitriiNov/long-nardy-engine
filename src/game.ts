@@ -12,8 +12,8 @@ class Game {
 	private moveState: MoveState | null = null;
 	private engine: Engine;
 
-	InitGame(): [number, number] {
-		const diceResult = this.getRandomDiffDices();
+	InitGame(dices: [number, number] | null): [number, number] {
+		const diceResult = dices || this.getDiffDices();
 		const player1 = new Player(diceResult[0] > diceResult[1]);
 		const player2 = new Player(diceResult[0] < diceResult[1]);
 		this.gameState = new GameState(player1, player2);
@@ -60,6 +60,10 @@ class Game {
 		return this.gameState.board;
 	}
 
+	GetPossibleMoves(): void {
+
+	}
+
 	GetCurrentMoveState(): MoveState {
 		if (this.moveState === null) {
 			throw new Error("Game not initialized");
@@ -78,10 +82,10 @@ class Game {
 		if (this.moveState !== null) {
 			currPlayer = this.moveState.currentPlayer;
 		}
-		this.moveState = new MoveState(this.moveState === null ? 1 : this.moveState.moveNumber + 1, currPlayer, dices);
+		this.moveState = new MoveState(this.moveState === null ? 1 : this.moveState.moveNumber + 1, currPlayer, dices, null, null);
 	}
 
-	private getRandomDiffDices(): [number, number] {
+	private getDiffDices(): [number, number] {
 		let dice1 = Math.floor(Math.random() * 6) + 1;
 		let dice2 = Math.floor(Math.random() * 6) + 1;
 		while (dice1 === dice2) {

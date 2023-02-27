@@ -8,7 +8,85 @@ class Engine {
 
 	private game: Game;
 
-	IsThereAnyPiece(moveState: MoveState, from: number): boolean {
+	GetPossibleMoves(): Array<Array<[number, number]>> {
+		const ms = this.game.GetCurrentMoveState();
+		const board = this.game.GetBoard();
+		const currentBoardCopy = board.getCurrentBoard(ms.currentPlayer).slice();
+
+		const newMoveState = new MoveState(ms.moveNumber, ms.currentPlayer, ms.dices, ms.remainingMoves, ms.doneMoves);
+
+
+
+		return [[[0, 0]]];
+	}
+
+	getAllUniquePermutations(nums: Array<number>): Array<Array<number>> {
+		if (nums.length === 0)
+			return [];
+		if (nums.length === 2) {
+			if (nums[0] === nums[1])
+				return [[nums[0], nums[1]]];
+			return [[nums[0], nums[1]], [nums[1], nums[0]]];
+		}
+		return [nums];
+	}
+
+	MakeMove(move: [number, number]): boolean {
+		const ms = this.game.GetCurrentMoveState();
+		const moveLength = move[1] - move[0];
+		const moves = ms.remainingMoves;
+		
+		const permutations = this.getAllUniquePermutations(moves);
+		
+		for (let k = 0; k < permutations.length; k++) {
+			const perm = permutations[k];
+			let sum = 0;
+			let i;
+			for (i = 0; i < perm.length; i++) {
+				sum += perm[i];
+				if (sum === moveLength)
+					break;
+			}
+			if (i === perm.length)
+				continue;
+			const usedMoves = perm.slice(0, i+1);
+			const newMoveState = new MoveState(ms.moveNumber, ms.currentPlayer, ms.dices, ms.remainingMoves, ms.doneMoves);
+			let currentPoint = move[0];
+			for (let j = 0; j < usedMoves.length; j++) {
+				const isValid = this.IsMoveValid(newMoveState, [currentPoint, currentPoint + usedMoves[j]]);
+				if (!isValid)
+					continue;
+				newMoveState.remainingMoves.splice(newMoveState.remainingMoves.indexOf(usedMoves[j]), 1);
+				newMoveState.doneMoves.push([currentPoint, usedMoves[j]]);
+				currentPoint += usedMoves[j];
+			}
+			return true;
+		}
+		return false;
+	}
+
+	IsMoveValid(moveState: MoveState, move: [number, number]): boolean {
+		if (!this.IsMovePossible(moveState, move))
+			return false;
+		if (!this.IsThereAnyPiece(moveState, move))
+			return false;
+		if (!this.IsThereNoPieceOnOpponentBoard(moveState, move))
+			return false;
+		if (!this.IsOnlyOnePieceFromHead(moveState, move))
+			return false;
+		if (!this.IsNoSixBlocked(moveState, move))
+			return false;
+		if (move[1] > 23) {
+			if (!this.AreAllPiecesAtHome(moveState))
+				return false;
+			if (move[1] > 24 && !this.AreThereNoAlternativeMoves(moveState, move))
+				return false;
+		}
+		return true;
+	}
+
+	IsThereAnyPiece(moveState: MoveState, move: [number, number]): boolean {
+		const from = move[0];
 		const board = this.game.GetBoard();
 		const currentBoard = board.getCurrentBoard(moveState.currentPlayer);
 		if (currentBoard[from] > 0)
@@ -16,7 +94,10 @@ class Engine {
 		return true;
 	}
 
-	IsThereAnyPieceOnOpponentBoard(moveState: MoveState, to: number): boolean {
+	IsThereNoPieceOnOpponentBoard(moveState: MoveState, move: [number, number]): boolean {
+		let to = move[1];
+		if (to > 23)
+			return true;
 		const board = this.game.GetBoard();
 		const currentBoard = board.getCurrentBoard(moveState.currentPlayer);
 		to += 12;
@@ -27,7 +108,47 @@ class Engine {
 		return true;
 	}
 
-	IsOnlyOnePieceFromHead(moveState: MoveState, from: number): boolean {
+	IsMovePossible(moveState: MoveState, move: [number, number]): boolean {
+		if (move[0] < 0 || move[0] > 23)
+			return false;
+		if (move[1] < 1 || move[1] > 29)	
+			return false;
+		if (move[1] <= move[0])
+			return false;
+		moveState.remainingMoves.forEach((element) => {
+			if (element === move[0])
+				return true;
+		});
+		return false;
+	}
+
+	AreAllPiecesAtHome(moveState: MoveState): boolean {
+		const board = this.game.GetBoard();
+		const currentBoard = board.getCurrentBoard(moveState.currentPlayer);
+		for (let i = 0; i < 18; i++) {
+			if (currentBoard[i] !== 0)
+				return false;
+		}
+		return true;
+	}
+
+	AreThereNoAlternativeMoves(moveState: MoveState, move: [number, number]): boolean {
+		const mv = move[1] - move[0];
+		const board = this.game.GetBoard();
+		const currentBoard = board.getCurrentBoard(moveState.currentPlayer);
+		const opponentBoard = board.getOpponentBoard(moveState.currentPlayer).slice(6, 12);
+		
+		for (let i = 0; i < 6; i++) {
+			if (i + 18 + mv < 24 && currentBoard[i+18] !== 0) {
+				if (opponentBoard[i + mv] === 0)
+					return true;
+			}
+		}
+		return true;
+	}
+
+	IsOnlyOnePieceFromHead(moveState: MoveState, move: [number, number]): boolean {
+		let from = move[0];
 		if (from !==  0 || moveState.doneMoves.length === 0)
 			return true;
 		if (moveState.doneMoves.length > 0) {
@@ -45,7 +166,8 @@ class Engine {
 		return false;
 	}
 
-	IsNoSixBlocked(moveState: MoveState, to: number): boolean {
+	IsNoSixBlocked(moveState: MoveState, move: [number, number]): boolean {
+		let to = move[1];
 		const board = this.game.GetBoard();
 		const currentBoard = board.getCurrentBoard(moveState.currentPlayer);
 		const opponentBoard = board.getOpponentBoard(moveState.currentPlayer);
@@ -66,20 +188,20 @@ class Engine {
 		let rowTo = checkFrom;
 		for (let i = checkFrom; i <= checkTo; i++) {
 			if (rowTo - rowFrom === 5) {
-				// тут проверка
+				const found = opponentPiecesBiggerThanTwelve.find((piece) => {
+					return piece >= rowTo;
+				});
+				if (found === undefined) {
+					return false;
+				}
+			}
+			if (currentBoard[i] > 0) {
+				rowTo = i;
+			} else {
+				rowFrom = i;
 			}
 		}
-
-	}
-
-	GetMovesTree(moveState: MoveState, board: Board): Array<Array<[number, number]>> {
-
-		return [[[0, 0]]];
-	}
-
-	Move(move: [number, number]): boolean {
-		const movesTree = this.GetMovesTree(this.game.GetCurrentMoveState(), this.game.GetBoard());
-		return true;
+		return true
 	}
 }
 
