@@ -34,22 +34,22 @@ class Game {
 		return this.moveState.currentPlayer;
 	}
 
-	IsMoveEnded(): boolean {
-		if (this.moveState === null || this.gameState === null) {
-			throw new Error("Game or Move not initialized");
-		}
-		if (this.moveState.remainingMoves.length === 0)
-			return true;
-		if (this.engine.GetMovesTree(this.moveState, this.gameState.board).length === 0)
-			return true;
-		return false;
-	}
+	// IsMoveEnded(): boolean {
+	// 	if (this.moveState === null || this.gameState === null) {
+	// 		throw new Error("Game or Move not initialized");
+	// 	}
+	// 	if (this.moveState.remainingMoves.length === 0)
+	// 		return true;
+	// 	if (this.engine.GetMovesTree(this.moveState, this.gameState.board).length === 0)
+	// 		return true;
+	// 	return false;
+	// }
 
 	Move(move: [number, number]): boolean {
 		if (this.gameState === null || this.moveState === null) {
 			throw new Error("Game or Move not initialized");
 		}
-		const isDone = this.engine.Move(move);
+		const isDone = this.engine.MakeMove(move);
 		return isDone;
 	}
 
@@ -75,9 +75,9 @@ class Game {
 		if (this.gameState === null) {
 			throw new Error("Game not initialized");
 		}
-		if (!this.IsMoveEnded()) {
-			throw new Error("Previous move not ended");
-		}
+		// if (!this.IsMoveEnded()) {
+		// 	throw new Error("Previous move not ended");
+		// }
 		let currPlayer = this.gameState.player1.isFirst ? this.gameState.player1 : this.gameState.player2;
 		if (this.moveState !== null) {
 			currPlayer = this.moveState.currentPlayer;

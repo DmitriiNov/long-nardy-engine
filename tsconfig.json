@@ -3,7 +3,6 @@
     "target": "ES6",
     "lib": ["ES2020"],
     "module": "commonjs",
-    "rootDir": "src",
     "moduleResolution": "node",
     "allowJs": false,
     "outDir": "dist",
@@ -12,5 +11,8 @@
     "strict": true,
     "noImplicitAny": true,
     "experimentalDecorators": true
-  }
+  },
+  "include": [
+    "src"
+  ]
 }
