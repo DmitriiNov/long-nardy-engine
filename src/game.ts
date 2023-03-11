@@ -12,7 +12,7 @@ class Game {
 	private moveState: MoveState | null = null;
 	private engine: Engine;
 
-	InitGame(dices: [number, number] | null): [number, number] {
+	InitGame(dices?: [number, number]): [number, number] {
 		const diceResult = dices || this.getDiffDices();
 		const player1 = new Player(diceResult[0] > diceResult[1]);
 		const player2 = new Player(diceResult[0] < diceResult[1]);
@@ -34,17 +34,6 @@ class Game {
 		return this.moveState.currentPlayer;
 	}
 
-	// IsMoveEnded(): boolean {
-	// 	if (this.moveState === null || this.gameState === null) {
-	// 		throw new Error("Game or Move not initialized");
-	// 	}
-	// 	if (this.moveState.remainingMoves.length === 0)
-	// 		return true;
-	// 	if (this.engine.GetMovesTree(this.moveState, this.gameState.board).length === 0)
-	// 		return true;
-	// 	return false;
-	// }
-
 	Move(move: [number, number]): boolean {
 		if (this.gameState === null || this.moveState === null) {
 			throw new Error("Game or Move not initialized");
@@ -60,8 +49,15 @@ class Game {
 		return this.gameState.board;
 	}
 
-	GetPossibleMoves(): void {
-
+	GetPossibleMoves(): { [key: number]: Array<number>; } {
+		if (this.gameState === null)
+			throw new Error('Game not initialized');
+		if (this.moveState === null)
+			throw new Error('Move not initialized');
+		if (this.moveState.isMoveEnded())
+			throw new Error('Move already ended');
+		const result = this.engine.GetPossibleMoves();
+		return result;
 	}
 
 	GetCurrentMoveState(): MoveState {
@@ -71,18 +67,34 @@ class Game {
 		return this.moveState;
 	}
 
-	InitMove(dices: [number, number] | null) {
-		if (this.gameState === null) {
-			throw new Error("Game not initialized");
-		}
-		// if (!this.IsMoveEnded()) {
-		// 	throw new Error("Previous move not ended");
-		// }
+	EndMove() {
+		const possibleMoves = this.GetPossibleMoves();
+		if (Object.keys(possibleMoves).length > 0)
+			throw new Error('There are moves to do');
+		this.moveState?.endMove()
+	}
+
+	StartMove(dices?: [number, number]) {
+		if (!this.gameState)
+			throw new Error('Game is not initialized');
+		if (!this.moveState?.isMoveEnded())
+			throw new Error('Previous move is not ended');
+
+		console.debug(this.gameState.player1 === this.moveState.currentPlayer);
+		const currPlayer = this.moveState.currentPlayer === this.gameState.player1
+			? this.gameState.player2 : this.gameState.player1
+		const moveNumber = this.moveState.moveNumber + 1;
+		this.moveState = new MoveState(this.moveState === null ? 1 : this.moveState.moveNumber + 1, currPlayer, dices || null, null, null);
+	}
+
+	InitFirstMove(dices: [number, number] | null) {
+		if (this.gameState === null)
+			throw new Error('Previous move is not ended');
+		if (this.moveState !== null)
+			throw new Error('First move already inited');
+
 		let currPlayer = this.gameState.player1.isFirst ? this.gameState.player1 : this.gameState.player2;
-		if (this.moveState !== null) {
-			currPlayer = this.moveState.currentPlayer;
-		}
-		this.moveState = new MoveState(this.moveState === null ? 1 : this.moveState.moveNumber + 1, currPlayer, dices, null, null);
+		this.moveState = new MoveState(1, currPlayer, dices, null, null);
 	}
 
 	private getDiffDices(): [number, number] {

@@ -34,8 +34,9 @@ class MoveState {
 	readonly moveNumber: number;
 	readonly currentPlayer: Player;
 	readonly dices: [number, number] = [this.getRandomDice(), this.getRandomDice()];
-	readonly remainingMoves: Array<number>;
-	readonly doneMoves: Array<[number, number]> = [];
+	remainingMoves: Array<number>;
+	doneMoves: Array<[number, number]> = [];
+	private isEnded: boolean = false;
 
 	removeFromRemainingMoves(move: number): boolean {
 		const index = this.remainingMoves.indexOf(move);
@@ -52,6 +53,32 @@ class MoveState {
 
 	getRandomDice(): number {
 		return Math.floor(Math.random() * 6) + 1;
+	}
+
+	endMove() {
+		this.isEnded = true;
+	}
+
+	setRemainingMoves(moves: Array<number>) {
+		this.remainingMoves = moves;
+	}
+
+	setDoneMoves(moves: Array<[number, number]>) {
+		this.doneMoves = moves;
+	}
+
+	isMoveEnded() {
+		return this.isEnded;
+	}
+	
+	getStateCopy() {
+		return new MoveState(
+			this.moveNumber,
+			this.currentPlayer,
+			[...this.dices],
+			[...this.remainingMoves],
+			[...this.doneMoves]
+		)
 	}
 }
 

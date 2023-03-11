@@ -39,6 +39,11 @@ class Board {
 		return board;
 	}
 
+	ApplyBoard(board: Board) {
+		this.whiteBoard = board.whiteBoard.slice();
+		this.blackBoard = board.blackBoard.slice();
+	}
+
 	static ObjectToArray(pieces: {[key: number]: number}): Array<number> {
 		return Array(24).fill(0).map((_, i) => (pieces[i] && pieces[i] > 0 ? pieces[i] : 0));
 	}

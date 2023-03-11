@@ -36,6 +36,8 @@ class Engine {
 
 	GetPossibleMoves(): { [key: number]: Array<number>; } {
 		const ms = this.game.GetCurrentMoveState();
+		if (ms.remainingMoves.length === 0)
+			return {};
 		const board = this.game.GetBoard();
 		const currentBoardCopy = board.getCurrentBoard(ms.currentPlayer).slice();
 
@@ -43,13 +45,31 @@ class Engine {
 
 		const permutations = this.getAllUniquePermutations(ms.remainingMoves);
 		for (let i = 0; i<24; i++) {
+			const possibleMoves = Array<number>();
 			if (currentBoardCopy[i] === 0)
 				continue;
 			for (let permutation of permutations) {
-				const newMoveState = new MoveState(ms.moveNumber, ms.currentPlayer, ms.dices, ms.remainingMoves, ms.doneMoves);
+				const newMoveState = ms.getStateCopy();
 				const newBoard = board.getBoardCopy();
-
+				let currentPoint = i;
+				for (let j = 0; j < permutation.length; j++) {
+					const validationResult = this.IsMoveValid(newMoveState, newBoard, [currentPoint, currentPoint + permutation[j]]);
+					if (validationResult.IsValid()) {
+						newMoveState.remainingMoves.splice(newMoveState.remainingMoves.indexOf(permutation[j]), 1);
+						newMoveState.doneMoves.push([currentPoint, permutation[j]]);
+						newBoard.move(newMoveState.currentPlayer, currentPoint, currentPoint + permutation[j])
+						currentPoint += permutation[j];
+						const found = possibleMoves.find(v => v === currentPoint);
+						if (!found)
+							possibleMoves.push(currentPoint);
+					} else {
+						j = Infinity;
+					}
+				}
 				
+			}
+			if (possibleMoves.length > 0) {
+				moves[i] = possibleMoves;
 			}
 		}
 		return moves;
@@ -67,9 +87,15 @@ class Engine {
 		return [nums];
 	}
 
+	
+
 	MakeMove(move: [number, number]): boolean {
 		const ms = this.game.GetCurrentMoveState();
 		const board = this.game.GetBoard();
+		return this.makeMove(ms, board, move);
+	}
+
+	makeMove(ms: MoveState, board: Board, move: [number, number]): boolean {
 		const moveLength = move[1] - move[0];
 		const moves = ms.remainingMoves;
 		
@@ -87,12 +113,22 @@ class Engine {
 			if (i === perm.length)
 				continue;
 			const usedMoves = perm.slice(0, i+1);
-			const newMoveState = new MoveState(ms.moveNumber, ms.currentPlayer, ms.dices, ms.remainingMoves, ms.doneMoves);
+			const newMoveState = ms.getStateCopy();
 			const newBoard = board.getBoardCopy();
 			
 			const isValid = this.validateMove(newMoveState, newBoard, usedMoves, move[0]);
-			if (isValid)
+			if (isValid) {
+				const movestate = this.game.GetCurrentMoveState();
+				if (movestate) {
+					movestate.setRemainingMoves(newMoveState.remainingMoves);
+					movestate.setDoneMoves(newMoveState.doneMoves);
+				}
+				const board = this.game.GetBoard();
+				if (board)
+					board.ApplyBoard(newBoard);
+
 				return true;
+			}
 		}
 		return false;
 	}
@@ -133,9 +169,7 @@ class Engine {
 
 	IsThereAnyPiece(moveState: MoveState, board: Board, move: [number, number]): ValidationResult {
 		const from = move[0];
-		console.debug(moveState)
 		const currentBoard = board.getCurrentBoard(moveState.currentPlayer);
-		console.debug(currentBoard);
 		if (currentBoard[from] <= 0)
 			return GetFalseValidationResult('[IsThereAnyPiece] no pieces')
 		return GetTrueValidationResult();
@@ -217,7 +251,10 @@ class Engine {
 
 	IsNoSixBlocked(moveState: MoveState, board: Board, move: [number, number]): ValidationResult {
 		let to = move[1];
-		const currentBoard = board.getCurrentBoard(moveState.currentPlayer);
+		const currentBoard = board.getCurrentBoard(moveState.currentPlayer).slice();
+		currentBoard[move[0]] -= 1;
+		if (move[1] < 24)
+			currentBoard[move[1]] += 1;
 		const opponentBoard = board.getOpponentBoard(moveState.currentPlayer);
 		const opponentPiecesBiggerThanTwelve = Array<number>();
 		opponentBoard.slice(12).forEach((piece, index) => {
@@ -246,7 +283,7 @@ class Engine {
 			if (currentBoard[i] > 0) {
 				rowTo = i;
 			} else {
-				rowFrom = i;
+				rowFrom = i+1;
 			}
 		}
 		return GetTrueValidationResult();
