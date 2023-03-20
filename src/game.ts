@@ -70,7 +70,7 @@ class Game {
 	EndMove() {
 		const possibleMoves = this.GetPossibleMoves();
 		if (Object.keys(possibleMoves).length > 0)
-			throw new Error('There are moves to do');
+			return false;
 		this.moveState?.endMove()
 	}
 
