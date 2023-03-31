@@ -227,7 +227,7 @@ class Engine {
 	}
 
 	IsOnlyOnePieceFromHead(moveState: MoveState, board: Board, move: [number, number]): ValidationResult {
-		let from = move[0];
+		let from = move[0]; //TODO допилить в соответствии с правилами нард по версии федерации нард
 		if (from !==  0 || moveState.doneMoves.length === 0)
 			return GetTrueValidationResult();
 		if (moveState.doneMoves.length > 0) {
