@@ -87,7 +87,6 @@ class Game {
 		if (!this.moveState?.isMoveEnded())
 			throw new Error('Previous move is not ended');
 
-		console.debug(this.gameState.player1 === this.moveState.currentPlayer);
 		const currPlayer = this.moveState.currentPlayer === this.gameState.player1
 			? this.gameState.player2 : this.gameState.player1
 		const moveNumber = this.moveState.moveNumber + 1;

@@ -227,7 +227,7 @@ class Engine {
 	}
 
 	IsOnlyOnePieceFromHead(moveState: MoveState, board: Board, move: [number, number]): ValidationResult {
-		let from = move[0]; //TODO допилить в соответствии с правилами нард по версии федерации нард
+		let from = move[0];
 		if (from !==  0 || moveState.doneMoves.length === 0)
 			return GetTrueValidationResult();
 		if (moveState.doneMoves.length > 0) {
@@ -238,7 +238,12 @@ class Engine {
 			});
 			if (doneHead === 1) {
 				let isRightDouble = moveState.dices[0] === moveState.dices[1] && [6,4,3].indexOf(moveState.dices[0]) !== -1;
-				let result = moveState.moveNumber === 1 && isRightDouble;
+				if (moveState.dices[0] === 4) {
+					let opponentBoard = board.getOpponentBoard(moveState.currentPlayer).slice(6, 12);
+					if (opponentBoard[20] !== 0)
+						return GetFalseValidationResult('[IsOnlyOnePieceFromHead] no possible moves with two heads')
+				}
+				let result = moveState.moveNumber < 3 && isRightDouble;
 				if (result)
 					return GetTrueValidationResult();
 				return GetFalseValidationResult('[IsOnlyOnePieceFromHead] head has been done');

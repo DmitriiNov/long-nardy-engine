@@ -112,6 +112,16 @@ describe('Checking "IsOnlyOnePieceFromHead"', () => {
 		const result = engine?.IsOnlyOnePieceFromHead(ms, board, [0, 3]);
 		expect(result?.IsValid()).toEqual(false);
 	});
+
+	test('No two heads when 20 is occupied', () => {
+		const board = new Board(
+			undefined,
+			Board.ObjectToArray({0: 14, 20: 1})
+		);
+		let ms = new MoveState(2, player!, [4, 4], [4, 4, 4], [[0, 4]]);
+		const result = engine?.IsOnlyOnePieceFromHead(ms, board, [0, 4]);
+		expect(result?.IsValid()).toEqual(false);
+	});
 });
 
 describe('Checking "IsNoSixBlocked"', () => {

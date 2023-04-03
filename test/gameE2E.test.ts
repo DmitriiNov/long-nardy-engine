@@ -9,7 +9,7 @@ game.InitGame([6, 1]);
 
 describe('Make Move Testing', () => {
 	test('6 move from starting position', () => {
-		game.InitFirstMove([2, 4]);
+		game.StartMove([2, 4]);
 		const ms = game.GetCurrentMoveState();
 		console.debug(game.GetPossibleMoves())
 		const result = game.Move([0, 6]);
