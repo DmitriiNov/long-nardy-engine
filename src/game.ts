@@ -71,17 +71,18 @@ class Game {
 		const possibleMoves = this.GetPossibleMoves();
 		if (Object.keys(possibleMoves).length > 0)
 			return false;
-		this.moveState?.endMove()
+		this.moveState?.endMove();
+		return true;
 	}
 
-	StartMove(dices?: [number, number]) {
+	StartMove(dices?: [number, number]): [number, number] {
 		if (!this.gameState)
 			throw new Error('Game is not initialized');
 
 		if (this.moveState === null) {
 			let currPlayer = this.gameState.player1.isFirst ? this.gameState.player1 : this.gameState.player2;
 			this.moveState = new MoveState(1, currPlayer, dices || null, null, null);
-			return;
+			return this.moveState.dices;
 		}
 
 		if (!this.moveState?.isMoveEnded())
@@ -91,6 +92,7 @@ class Game {
 			? this.gameState.player2 : this.gameState.player1
 		const moveNumber = this.moveState.moveNumber + 1;
 		this.moveState = new MoveState(this.moveState === null ? 1 : this.moveState.moveNumber + 1, currPlayer, dices || null, null, null);
+		return this.moveState.dices;
 	}
 
 	private getDiffDices(): [number, number] {
