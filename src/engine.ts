@@ -210,7 +210,7 @@ class Engine {
 	}
 
 	AreThereNoAlternativeMoves(moveState: MoveState, board: Board, move: [number, number]): ValidationResult {
-		if (move[1] < 25) {
+		if (move[1] < 24) {
 			return GetTrueValidationResult();
 		}
 		const mv = move[1] - move[0];

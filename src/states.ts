@@ -48,6 +48,7 @@ class MoveState {
 		if (doneMoves !== null) {
 			this.doneMoves = doneMoves;
 		}
+		remainingMoves?.sort((a, b) => a - b);
 	}
 
 	readonly moveNumber: number;

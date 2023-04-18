@@ -186,6 +186,24 @@ describe('Checking "AreThereNoAlternativeMoves"', () => {
 		expect(result).toEqual(trueVal);
 	});
 
+	test('There are no alternatives', () => {
+		const board = new Board(
+			Board.ObjectToArray({20: 1, 22: 1})
+		);
+		let ms = new MoveState(12, player!, [3, 5], [3, 5], []);
+		const result = engine?.AreThereNoAlternativeMoves(ms, board, [22, 27]);
+		expect(result?.IsValid()).toEqual(false);
+	});
+
+	test('There are no alternatives', () => {
+		const board = new Board(
+			Board.ObjectToArray({20: 1, 22: 1})
+		);
+		let ms = new MoveState(12, player!, [3, 5], [3, 5], []);
+		const result = engine?.AreThereNoAlternativeMoves(ms, board, [22, 25]);
+		expect(result).toEqual(trueVal);
+	});
+
 	test('Not all pieces are at home', () => {
 		const board = new Board(
 			Board.ObjectToArray({19: 3, 22: 12})

@@ -44,6 +44,13 @@ class Board {
 		this.blackBoard = board.blackBoard.slice();
 	}
 
+	CountPieces(player: Player): number {
+		const count = (player.isFirst ? this.whiteBoard : this.blackBoard).reduce(
+			(acc, val) => acc + val, 0
+		);
+		return count;
+	}
+ 
 	static ObjectToArray(pieces: {[key: number]: number}): Array<number> {
 		return Array(24).fill(0).map((_, i) => (pieces[i] && pieces[i] > 0 ? pieces[i] : 0));
 	}
