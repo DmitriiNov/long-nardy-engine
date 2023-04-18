@@ -34,6 +34,14 @@ class Game {
 		return this.moveState.currentPlayer;
 	}
 
+	GetOppositePlayer(): Player {
+		if (this.gameState === null || this.moveState === null) {
+			throw new Error("Game or Move not initialized");
+		}
+		const currPlayer = this.moveState.currentPlayer;
+		return this.moveState.currentPlayer === this.gameState.player1 ? this.gameState.player2 : this.gameState.player1;
+	}
+
 	Move(move: [number, number]): boolean {
 		if (this.gameState === null || this.moveState === null) {
 			throw new Error("Game or Move not initialized");
@@ -68,17 +76,35 @@ class Game {
 	}
 
 	EndMove() {
+		if (!this.gameState)
+			throw new Error('Game is not initialized');
+		if (!this.moveState)
+			throw new Error('Move is not initialized');
 		const possibleMoves = this.GetPossibleMoves();
 		if (Object.keys(possibleMoves).length > 0)
 			return false;
-		this.moveState?.endMove();
+		this.moveState.endMove();
+		const currPlayerFinished = this.gameState.board.CountPieces(this.GetCurrentPlayer()) === 0;
+		const oppositePlayerFinished = this.gameState.board.CountPieces(this.GetOppositePlayer()) === 0
+		if (currPlayerFinished && !oppositePlayerFinished) {
+			if (!this.GetCurrentPlayer().isFirst) {
+				this.gameState.EndGame();
+				this.gameState.SetWinner(this.GetCurrentPlayer());
+			}
+		} else if (!currPlayerFinished && oppositePlayerFinished) {
+			this.gameState.EndGame();
+			this.gameState.SetWinner(this.GetOppositePlayer());
+		} else if (currPlayerFinished && oppositePlayerFinished) {
+			this.gameState.EndGame();
+		}
 		return true;
 	}
 
 	StartMove(dices?: [number, number]): [number, number] {
 		if (!this.gameState)
 			throw new Error('Game is not initialized');
-
+		if (this.gameState.HasGameEnded())
+			throw new Error('Game has been ended');
 		if (this.moveState === null) {
 			let currPlayer = this.gameState.player1.isFirst ? this.gameState.player1 : this.gameState.player2;
 			this.moveState = new MoveState(1, currPlayer, dices || null, null, null);
@@ -93,6 +119,16 @@ class Game {
 		const moveNumber = this.moveState.moveNumber + 1;
 		this.moveState = new MoveState(this.moveState === null ? 1 : this.moveState.moveNumber + 1, currPlayer, dices || null, null, null);
 		return this.moveState.dices;
+	}
+
+	HasGameEnded (): boolean {
+		if (this.gameState)
+			return this.gameState?.HasGameEnded();
+		return false
+	}
+
+	GetWinner (): Player | undefined {
+		return this.gameState?.GetWinner();
 	}
 
 	private getDiffDices(): [number, number] {
