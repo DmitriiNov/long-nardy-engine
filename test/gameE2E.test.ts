@@ -11,9 +11,7 @@ describe('Make Move Testing', () => {
 	test('6 move from starting position', () => {
 		game.StartMove([2, 4]);
 		const ms = game.GetCurrentMoveState();
-		console.debug(game.GetPossibleMoves())
 		const result = game.Move([0, 6]);
-		console.debug(game.GetBoard());
 		expect(result).toEqual(true);
 	});
 
@@ -25,7 +23,6 @@ describe('Make Move Testing', () => {
 		game.StartMove([2, 2])
 		const ms = game.GetCurrentMoveState();
 		const board = game.GetBoard();
-		console.debug(game.GetPossibleMoves())
 		const result = game.Move([0, 7]);
 		expect(result).toEqual(false);
 	});
@@ -33,7 +30,6 @@ describe('Make Move Testing', () => {
 	test('8 move from starting position', () => {
 		const ms = game.GetCurrentMoveState();
 		const board = game.GetBoard();
-		console.debug(game.GetPossibleMoves())
 		const result = game.Move([0, 8]);
 		expect(result).toEqual(true);
 	});
@@ -46,7 +42,6 @@ describe('Make Move Testing', () => {
 		game.StartMove([3, 5])
 		const ms = game.GetCurrentMoveState();
 		const board = game.GetBoard();
-		console.debug(game.GetPossibleMoves())
 		const result = game.Move([0, 8]);
 		expect(result).toEqual(true);
 	});

@@ -177,7 +177,7 @@ describe('Checking "AreAllPiecesAtHome"', () => {
 });
 
 describe('Checking "AreThereNoAlternativeMoves"', () => {
-	test('There are no alternatives', () => {
+	test('There are no alternatives 1', () => {
 		const board = new Board(
 			Board.ObjectToArray({19: 3, 22: 12})
 		);
@@ -186,7 +186,7 @@ describe('Checking "AreThereNoAlternativeMoves"', () => {
 		expect(result).toEqual(trueVal);
 	});
 
-	test('There are no alternatives', () => {
+	test('There are no alternatives 2', () => {
 		const board = new Board(
 			Board.ObjectToArray({20: 1, 22: 1})
 		);
@@ -195,16 +195,16 @@ describe('Checking "AreThereNoAlternativeMoves"', () => {
 		expect(result?.IsValid()).toEqual(false);
 	});
 
-	test('There are no alternatives', () => {
+	test('There are no alternatives 3', () => {
 		const board = new Board(
-			Board.ObjectToArray({20: 1, 22: 1})
+			Board.ObjectToArray({20: 1, 21: 1})
 		);
 		let ms = new MoveState(12, player!, [3, 5], [3, 5], []);
-		const result = engine?.AreThereNoAlternativeMoves(ms, board, [22, 25]);
+		const result = engine?.AreThereNoAlternativeMoves(ms, board, [22, 24]);
 		expect(result).toEqual(trueVal);
 	});
 
-	test('Not all pieces are at home', () => {
+	test('There are no alternatives 4', () => {
 		const board = new Board(
 			Board.ObjectToArray({19: 3, 22: 12})
 		);

@@ -210,17 +210,16 @@ class Engine {
 	}
 
 	AreThereNoAlternativeMoves(moveState: MoveState, board: Board, move: [number, number]): ValidationResult {
-		if (move[1] < 24) {
+		if (move[1] <= 24) {
 			return GetTrueValidationResult();
 		}
 		const mv = move[1] - move[0];
 		const currentBoard = board.getCurrentBoard(moveState.currentPlayer);
 		const opponentBoard = board.getOpponentBoard(moveState.currentPlayer).slice(6, 12);
-		
-		for (let i = 0; i < 6; i++) {
-			if (i + 18 + mv < 24 && currentBoard[i+18] !== 0) {
-				if (opponentBoard[i + mv] === 0)
-					return GetFalseValidationResult('[AreThereNoAlternativeMoves] there are alternative moves');
+		for (let i = 6; i > 24 - move[0]; i--) {
+			if (currentBoard[24 - i] > 0) {
+				// TODO: Maybe add check for opponent pieces here (unclear rules)
+				return GetFalseValidationResult('[AreThereNoAlternativeMoves] there are alternative moves')
 			}
 		}
 		return GetTrueValidationResult();
