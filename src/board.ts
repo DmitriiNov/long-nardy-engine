@@ -26,10 +26,10 @@ class Board {
 
 	move (player: Player, from: number, to: number) {
 		const brd = player.isFirst ? this.whiteBoard : this.blackBoard
-		brd[from] -= 1;
-		if (to < 24) {
+		if (from < 24)
+			brd[from] -= 1;
+		if (to < 24)
 			brd[to] += 1;
-		};
 	}
 
 	getBoardCopy(): Board {
