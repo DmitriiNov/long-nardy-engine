@@ -20,7 +20,7 @@ class Game {
 		return diceResult;
 	}
 
-	UndoLastMove() {
+	UndoLastMove(): [number, number] {
 		if (this.moveState === null)
 			throw new Error("Move not initialized");
 		if (this.moveState.isMoveEnded())
@@ -32,6 +32,7 @@ class Game {
 			throw new Error("No moves have been done yet");
 		this.GetBoard().move(this.GetCurrentPlayer(), move[1], move[0])
 		this.moveState.remainingMoves.push(move[1] - move[0])
+		return move;
 	}
 
 	GetPlayers(): [Player, Player] {
@@ -143,6 +144,10 @@ class Game {
 
 	GetWinner (): Player | undefined {
 		return this.gameState?.GetWinner();
+	}
+
+	Export (): any {
+		return JSON.parse(JSON.stringify(this));
 	}
 
 	private getDiffDices(): [number, number] {
