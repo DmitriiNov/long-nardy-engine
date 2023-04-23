@@ -31,6 +31,7 @@ class GameState {
 	}
 }
 
+
 class MoveState {
 	constructor(num: number, player: Player, dices: [number, number] | null, remainingMoves: Array<number> | null, doneMoves: Array<[number, number]> | null) {
 		this.moveNumber = num;

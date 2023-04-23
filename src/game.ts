@@ -20,6 +20,20 @@ class Game {
 		return diceResult;
 	}
 
+	UndoLastMove() {
+		if (this.moveState === null)
+			throw new Error("Move not initialized");
+		if (this.moveState.isMoveEnded())
+			throw new Error("Move ended");
+		if (this.moveState.remainingMoves.length === 0)
+			throw new Error("Not possible on the last move");
+		const move = this.moveState.doneMoves.pop();
+		if (!move)
+			throw new Error("No moves have been done yet");
+		this.GetBoard().move(this.GetCurrentPlayer(), move[1], move[0])
+		this.moveState.remainingMoves.push(move[1] - move[0])
+	}
+
 	GetPlayers(): [Player, Player] {
 		if (this.gameState === null) {
 			throw new Error("Game not initialized");

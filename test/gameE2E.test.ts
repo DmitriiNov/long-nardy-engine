@@ -27,10 +27,16 @@ describe('Make Move Testing', () => {
 		expect(result).toEqual(false);
 	});
 
-	test('8 move from starting position', () => {
+	test('6 move from starting position', () => {
 		const ms = game.GetCurrentMoveState();
 		const board = game.GetBoard();
-		const result = game.Move([0, 8]);
+		const result = game.Move([0, 6]);
+		expect(result).toEqual(true);
+	});
+
+	test('4 move from 4 with UNDO', () => {
+		game.UndoLastMove();
+		const result = game.Move([4, 8]);
 		expect(result).toEqual(true);
 	});
 

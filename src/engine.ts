@@ -56,7 +56,7 @@ class Engine {
 					const validationResult = this.IsMoveValid(newMoveState, newBoard, [currentPoint, currentPoint + permutation[j]]);
 					if (validationResult.IsValid()) {
 						newMoveState.remainingMoves.splice(newMoveState.remainingMoves.indexOf(permutation[j]), 1);
-						newMoveState.doneMoves.push([currentPoint, permutation[j]]);
+						newMoveState.doneMoves.push([currentPoint, currentPoint + permutation[j]]);
 						newBoard.move(newMoveState.currentPlayer, currentPoint, currentPoint + permutation[j])
 						currentPoint += permutation[j];
 						const found = possibleMoves.find(v => v === currentPoint);
@@ -140,7 +140,7 @@ class Engine {
 			if (!validationResult.IsValid())
 				return false;
 			moveState.remainingMoves.splice(moveState.remainingMoves.indexOf(moves[j]), 1);
-			moveState.doneMoves.push([currentPoint, moves[j]]);
+			moveState.doneMoves.push([currentPoint, currentPoint + moves[j]]);
 			board.move(moveState.currentPlayer, currentPoint, currentPoint + moves[j])
 			currentPoint += moves[j];
 		}
