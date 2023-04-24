@@ -135,6 +135,16 @@ describe('Checking "IsNoSixBlocked"', () => {
 		expect(result).toEqual(trueVal);
 	});
 
+	test('Six block by Lesni4iy', () => {
+		const board = new Board(
+			Board.ObjectToArray({0: 6, 3: 1, 4: 1, 7: 1, 8: 1, 9: 1, 10: 1, 11: 1, 13: 1, 14: 1,}),
+			Board.ObjectToArray({0: 7, 4: 1, 5: 2, 7: 1, 9: 1, 10: 1, 11: 1, 13: 1})
+		);
+		let ms = new MoveState(12, player!, [3, 6], [3, 6], []);
+		const result = engine?.IsNoSixBlocked(ms, board, [3, 6]);
+		expect(result?.IsValid()).toEqual(false);
+	});
+
 	test('Six block', () => {
 		const board = new Board(
 			Board.ObjectToArray({0: 10, 4: 1, 5: 1, 7: 1, 8: 1, 9: 1}),
