@@ -137,8 +137,8 @@ describe('Checking "IsNoSixBlocked"', () => {
 
 	test('Six block by Lesni4iy', () => {
 		const board = new Board(
-			Board.ObjectToArray({0: 6, 3: 1, 4: 1, 7: 1, 8: 1, 9: 1, 10: 1, 11: 1, 13: 1, 14: 1,}),
-			Board.ObjectToArray({0: 7, 4: 1, 5: 2, 7: 1, 9: 1, 10: 1, 11: 1, 13: 1})
+			Board.ObjectToArray({0: 6, 3: 1, 7: 1, 8: 1, 9: 1, 10: 1, 11: 1}),
+			Board.ObjectToArray({0: 7, 11: 1, 13: 1})
 		);
 		let ms = new MoveState(12, player!, [3, 6], [3, 6], []);
 		const result = engine?.IsNoSixBlocked(ms, board, [3, 6]);

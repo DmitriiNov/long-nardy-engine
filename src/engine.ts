@@ -259,37 +259,21 @@ class Engine {
 		currentBoard[move[0]] -= 1;
 		if (move[1] < 24)
 			currentBoard[move[1]] += 1;
-		const opponentBoard = board.getOpponentBoard(moveState.currentPlayer);
-		const opponentPiecesBiggerThanTwelve = Array<number>();
-		opponentBoard.slice(12).forEach((piece, index) => {
-			if (piece > 0)
-				opponentPiecesBiggerThanTwelve.push(index);
-		});
-		for (let pieceIndex of opponentPiecesBiggerThanTwelve) {
-			if (pieceIndex >= 6)
-				return GetTrueValidationResult();
-		}
-		let checkFrom = to - 5 > 0 ? to - 5 : 0;
-		let checkTo = to + 5 > 11 ? to + 5 : 11;
-
-
-		let rowFrom = checkFrom;
-		let rowTo = checkFrom;
-		for (let i = checkFrom; i <= checkTo; i++) {
-			if (rowTo - rowFrom === 5) {
-				const found = opponentPiecesBiggerThanTwelve.find((piece) => {
-					return piece >= rowTo;
-				});
-				if (found === undefined) {
-					return GetFalseValidationResult('[IsNoSixBlocked] blocked six');
+		const opponentBoard = board.getOpponentBoard(moveState.currentPlayer).slice(12);
+		
+		let k = 0
+		for (let i = 0; i < 12; i++) {
+			if (currentBoard[i] === 0) 
+				k = i;
+			if (i - k > 5) {
+				for (let m = i; m < 12; m++) {
+					if (opponentBoard[m] > 0)
+						return GetTrueValidationResult();
 				}
-			}
-			if (currentBoard[i] > 0) {
-				rowTo = i;
-			} else {
-				rowFrom = i+1;
+				return GetFalseValidationResult('[IsNoSixBlocked] blocked six');
 			}
 		}
+
 		return GetTrueValidationResult();
 	}
 
