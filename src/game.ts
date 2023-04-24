@@ -4,8 +4,13 @@ import { Engine } from "./engine"
 import { Board } from "./board";
 import { platform } from "os";
 class Game {
-	constructor() {
+	constructor(gameState?: GameState, moveState?: MoveState) {
 		this.engine = new Engine(this);
+		if (gameState) {
+			this.gameState = gameState;
+			if (moveState)
+				this.moveState = moveState;
+		}
 	}
  
 	private gameState: GameState | null = null;

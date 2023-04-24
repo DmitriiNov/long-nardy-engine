@@ -292,6 +292,10 @@ class Engine {
 		}
 		return GetTrueValidationResult();
 	}
+
+	toJSON(): any {
+		return {};
+	}
 }
 
 export { Engine, ValidationResult };

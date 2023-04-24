@@ -2,10 +2,13 @@ import { Player } from './player';
 import { Board } from './board';
 
 class GameState {
-	constructor(player1: Player, player2: Player) {
+	constructor(player1: Player, player2: Player, board?: Board) {
 		this.player1 = player1;
 		this.player2 = player2;
-		this.board = new Board();
+		if (board)
+			this.board = board
+		else
+			this.board = new Board();
 	}
 	readonly player1: Player;
 	readonly player2: Player;

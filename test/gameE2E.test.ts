@@ -1,10 +1,9 @@
 import {describe, expect, test, beforeAll, beforeEach} from '@jest/globals';
 import { Engine, ValidationResult } from '../src/engine';
 import { Game } from '../src/game';
-import { MoveState } from '../src/states';
-import { Player } from '../src/player';
-import { Board } from '../src/board';
-const game = new Game();
+import { ImportGame } from '../src/index'
+
+let game = new Game();
 game.InitGame([6, 1]);
 
 describe('Make Move Testing', () => {
@@ -44,11 +43,16 @@ describe('Make Move Testing', () => {
 		game.EndMove();
 	});
 
-	test('7 move from starting position (wrong)', () => {
+	test('Making one 3 move', () => {
 		game.StartMove([3, 5])
-		const ms = game.GetCurrentMoveState();
-		const board = game.GetBoard();
-		const result = game.Move([0, 8]);
+		const result = game.Move([0, 3]);
+		expect(result).toEqual(true);
+	});
+
+	test('Export and Import', () => {
+		const gameExport = game.Export();
+		game = ImportGame(gameExport)
+		const result = game.Move([3, 8]);
 		expect(result).toEqual(true);
 	});
 });
