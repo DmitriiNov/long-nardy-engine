@@ -261,7 +261,7 @@ class Engine {
 			currentBoard[move[1]] += 1;
 		const opponentBoard = board.getOpponentBoard(moveState.currentPlayer).slice(12);
 		
-		let k = 0
+		let k = -1;
 		for (let i = 0; i < 12; i++) {
 			if (currentBoard[i] === 0) 
 				k = i;
