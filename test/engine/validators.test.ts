@@ -164,6 +164,36 @@ describe('Checking "IsNoSixBlocked"', () => {
 		const result = engine?.IsNoSixBlocked(ms, board, [0, 6]);
 		expect(result).toEqual(trueVal);
 	});
+
+	test('Six block', () => {
+		const board = new Board(
+			Board.ObjectToArray({0: 11, 1: 1, 2: 1, 3: 1, 4: 1}),
+			Board.ObjectToArray({0: 15})
+		);
+		let ms = new MoveState(12, player!, [5, 2], [5, 2], []);
+		const result = engine?.IsNoSixBlocked(ms, board, [0, 5]);
+		expect(result?.IsValid()).toEqual(false);
+	});
+
+	test('Six block', () => {
+		const board = new Board(
+			Board.ObjectToArray({0: 11, 2: 2, 3: 1, 4: 1, 5: 1, 6: 1}),
+			Board.ObjectToArray({0: 15})
+		);
+		let ms = new MoveState(12, player!, [5, 2], [5, 2], []);
+		const result = engine?.IsNoSixBlocked(ms, board, [2, 7]);
+		expect(result?.IsValid()).toEqual(false);
+	});
+
+	test('Six block', () => {
+		const board = new Board(
+			Board.ObjectToArray({0: 11, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1}),
+			Board.ObjectToArray({0: 15})
+		);
+		let ms = new MoveState(12, player!, [5, 2], [5, 2], []);
+		const result = engine?.IsNoSixBlocked(ms, board, [2, 7]);
+		expect(result).toEqual(trueVal);
+	});
 });
 
 describe('Checking "AreAllPiecesAtHome"', () => {
