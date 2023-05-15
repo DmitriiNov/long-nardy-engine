@@ -1,4 +1,3 @@
-import internal from 'stream';
 import { Player } from './player';
 class Board {
 	constructor(white?: Array<number>, black?: Array<number>) {

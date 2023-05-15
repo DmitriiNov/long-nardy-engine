@@ -4,13 +4,7 @@ import { MoveState } from "./states";
 
 type ValidatorFunction = (moveState: MoveState, board: Board, move: [number, number]) => ValidationResult;
 class ValidationResult {
-	constructor (message: string, valid: boolean) {
-		this.message = message;
-		this.valid = valid;
-	}
-	message: string;
-	valid: boolean;
-
+	constructor (public message: string, public valid: boolean) {}
 	IsValid() {
 		return this.valid
 	}

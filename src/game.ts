@@ -2,9 +2,35 @@ import { Player } from "./player";
 import { GameState, MoveState } from "./states";
 import { Engine } from "./engine"
 import { Board } from "./board";
-import { platform } from "os";
+
+
+type ExportPlayer = {
+	isFirst: boolean
+};
+
+type ExportGame = {
+	gameState?: {
+		player1: ExportPlayer,
+		player2: ExportPlayer,
+		board: {
+			whiteBoard: Array<number>;
+			blackBoard: Array<number>;
+		},
+		winner?: ExportPlayer,
+		gameEnded: boolean
+	},
+	moveState?: {
+		currentPlayer: ExportPlayer,
+		moveNumber: number,
+		dices: [number, number],
+		doneMoves: Array<[number, number]>,
+		remainingMoves: Array<number>,
+		isEnded: boolean,
+	},
+	engine?: {}
+}
 class Game {
-	constructor(gameState?: GameState, moveState?: MoveState) {
+	private constructor(gameState?: GameState, moveState?: MoveState) {
 		this.engine = new Engine(this);
 		if (gameState) {
 			this.gameState = gameState;
@@ -151,8 +177,37 @@ class Game {
 		return this.gameState?.GetWinner();
 	}
 
-	Export (): any {
+	Export (): ExportGame {
 		return JSON.parse(JSON.stringify(this));
+	}
+
+	static CreateGame (data?: ExportGame): Game {
+		if (!data)
+			return new Game();
+		let gameState: GameState | undefined = undefined;
+		let moveState: MoveState | undefined = undefined;
+		if (data.gameState) {
+			const gs = data.gameState
+			const player1 = new Player(gs.player1?.isFirst ? true : false);
+			const player2 = new Player(!player1.isFirst);
+			const board = new Board(gs.board?.whiteBoard || undefined, gs.board?.blackBoard || undefined)
+			gameState = new GameState(player1, player2, board);
+			if (gs.gameEnded)
+				gameState.EndGame();
+			if (gs.winner) {
+				const isWinnerFirst = !!gs.winner.isFirst;
+				gameState.SetWinner(player1.isFirst ? (isWinnerFirst ? player1 : player2) : (isWinnerFirst ? player2 : player1));
+			}	
+			if (data.moveState) {
+				const ms = data.moveState;
+				const isCurrentPlayerFirst = ms.currentPlayer?.isFirst;
+				const currPlayer = player1.isFirst ? (isCurrentPlayerFirst ? player1 : player2) : (isCurrentPlayerFirst ? player2 : player1);
+				moveState = new MoveState(ms.moveNumber || 0, currPlayer, ms.dices, ms.remainingMoves, ms.doneMoves)
+				if (ms.isEnded)
+					moveState.endMove()
+			}
+		}
+		return new Game(gameState, moveState);
 	}
 
 	private getDiffDices(): [number, number] {
@@ -165,4 +220,4 @@ class Game {
 	}
 }
 
-export { Game };
+export { Game, ExportGame };

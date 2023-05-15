@@ -1,9 +1,8 @@
 import {describe, expect, test, beforeAll, beforeEach} from '@jest/globals';
 import { Engine, ValidationResult } from '../src/engine';
 import { Game } from '../src/game';
-import { ImportGame } from '../src/index'
 
-let game = new Game();
+let game = Game.CreateGame();
 game.InitGame([6, 1]);
 
 describe('Make Move Testing', () => {
@@ -51,7 +50,7 @@ describe('Make Move Testing', () => {
 
 	test('Export and Import', () => {
 		const gameExport = game.Export();
-		game = ImportGame(gameExport)
+		game = Game.CreateGame(gameExport)
 		const result = game.Move([3, 8]);
 		expect(result).toEqual(true);
 	});

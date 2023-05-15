@@ -4,7 +4,7 @@ import { Game } from '../../src/game';
 import { MoveState } from '../../src/states';
 import { Player } from '../../src/player';
 import { Board } from '../../src/board';
-const game = new Game();
+const game = Game.CreateGame();
 let engine = new Engine(game);
 let player = new Player(true);
 const trueVal = new ValidationResult('', true)

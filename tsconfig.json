@@ -10,6 +10,7 @@
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "noImplicitAny": true,
+    "strictNullChecks": true,
     "experimentalDecorators": true
   },
   "include": [
