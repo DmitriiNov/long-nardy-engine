@@ -4,6 +4,7 @@
     "lib": ["ES2020"],
     "module": "ESNext",
     "moduleResolution": "node",
+    "declaration": true,
     "allowJs": false,
     "outDir": "dist",
     "esModuleInterop": true,
@@ -11,7 +12,6 @@
     "strict": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
-    "experimentalDecorators": true
   },
   "include": [
     "src"

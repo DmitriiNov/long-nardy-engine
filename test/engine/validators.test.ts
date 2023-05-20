@@ -252,4 +252,15 @@ describe('Checking "AreThereNoAlternativeMoves"', () => {
 		const result = engine?.AreThereNoAlternativeMoves(ms, board, [22, 25]);
 		expect(result?.IsValid()).toEqual(false);
 	});
+
+	test('There are no alternatives (blocked)', () => {
+		const board = new Board(
+			Board.ObjectToArray({18: 1, 21: 1}),
+			Board.ObjectToArray({10: 1})
+		);
+		let ms = new MoveState(12, player!, [4, 1], [4], [[23, 24]]);
+		const result = engine?.AreThereNoAlternativeMoves(ms, board, [21, 25]);
+		expect(result).toEqual(trueVal);
+	});
+
 });
