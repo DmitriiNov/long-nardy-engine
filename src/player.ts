@@ -5,4 +5,4 @@ class Player {
 	readonly isFirst: boolean;
 }
 
-export { Player };
+export default Player;

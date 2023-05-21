@@ -1,8 +1,8 @@
-import { Player } from './player';
 import MoveState from './states/moveState';
 import GameState from './states/gameState';
 import Engine from './engine/engine';
-import { Board } from './board';
+import Player from './player';
+import Board from './board';
 
 type ExportPlayer = {
 	isFirst: boolean;
@@ -34,20 +34,20 @@ function HasGameState<Return>(
 	target: (this: Game, ...args: any[]) => Return,
 	context: ClassMethodDecoratorContext<Game, (this: Game, ...args: any[]) => Return>
 ) {
-	return function(this: Game, ...args: any[]): Return {
+	return function (this: Game, ...args: any[]): Return {
 		if (!this.HasGameState()) throw new Error('Game not initialized');
 		return target.call(this, ...args);
-	}
+	};
 }
 
 function HasMoveState<Return>(
 	target: (this: Game, ...args: any[]) => Return,
 	context: ClassMethodDecoratorContext<Game, (this: Game, ...args: any[]) => Return>
 ) {
-	return function(this: Game, ...args: any[]): Return {
+	return function (this: Game, ...args: any[]): Return {
 		if (!this.HasMoveState()) throw new Error('Move not initialized');
 		return target.call(this, ...args);
-	}
+	};
 }
 
 class Game {
@@ -114,7 +114,7 @@ class Game {
 
 	Move(move: [number, number]): boolean {
 		if (this.gameState === null || this.moveState === null) {
-			throw new Error("Game or Move not initialized");
+			throw new Error('Game or Move not initialized');
 		}
 		const isDone = this.engine.MakeMove(move);
 		return isDone;
@@ -122,7 +122,7 @@ class Game {
 
 	GetBoard(): Board {
 		if (this.gameState === null) {
-			throw new Error("Game not initialized");
+			throw new Error('Game not initialized');
 		}
 		return this.gameState.board;
 	}

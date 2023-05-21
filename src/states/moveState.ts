@@ -1,4 +1,4 @@
-import { Player } from '../player';
+import Player from '../player';
 
 class MoveState {
 	constructor(
@@ -60,7 +60,7 @@ class MoveState {
 
 	setDoneMoves(moves: Array<[number, number]>) {
 		this.doneMoves = moves;
-	} 
+	}
 
 	isMoveEnded() {
 		return this.isEnded;

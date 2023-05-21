@@ -1,7 +1,7 @@
 import { Game } from '../game';
-import { Board } from '../board';
+import Board from '../board';
 import MoveState from '../states/moveState';
-import { ValidationResult, ValidatorFunction, ValidatorFunctionsMap, validators} from './moveValidators'
+import { ValidationResult, ValidatorFunction, ValidatorFunctionsMap, validators } from './moveValidators';
 
 class Engine {
 	constructor(game: Game) {
@@ -125,7 +125,7 @@ class Engine {
 				if (!result.IsValid()) return result;
 			}
 		}
-		return new ValidationResult('', true)
+		return new ValidationResult('', true);
 	}
 
 	toJSON(): any {

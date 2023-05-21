@@ -1,8 +1,8 @@
-import MoveState from "../states/moveState";
-import { Board } from "../board";
+import MoveState from '../states/moveState';
+import Board from '../board';
 
 type ValidatorFunction = (moveState: MoveState, board: Board, move: [number, number]) => ValidationResult;
-type ValidatorFunctionsMap = {[name: string]: ValidatorFunction};
+type ValidatorFunctionsMap = { [name: string]: ValidatorFunction };
 
 class ValidationResult {
 	constructor(public message: string, public valid: boolean) {}
@@ -24,7 +24,7 @@ const IsThereAnyPiece: ValidatorFunction = (moveState, board, move) => {
 	const currentBoard = board.getCurrentBoard(moveState.currentPlayer);
 	if (currentBoard[from] <= 0) return GetFalseValidationResult('[IsThereAnyPiece] no pieces');
 	return GetTrueValidationResult();
-}
+};
 
 const IsThereNoPieceOnOpponentBoard: ValidatorFunction = (moveState, board, move) => {
 	let to = move[1];
@@ -34,25 +34,25 @@ const IsThereNoPieceOnOpponentBoard: ValidatorFunction = (moveState, board, move
 	if (to > 23) to -= 24;
 	if (currentBoard[to] > 0) return GetFalseValidationResult('[IsThereNoPieceOnOpponentBoard] there are pieces on opponent`s board');
 	return GetTrueValidationResult();
-}
+};
 
 const IsMovePossible: ValidatorFunction = (moveState, board, move) => {
 	if (move[0] < 0 || move[0] > 23) return GetFalseValidationResult('[IsMovePossible] move "from" is not valid');
 	if (move[1] < 1 || move[1] > 29) return GetFalseValidationResult('[IsMovePossible] move "to" is not valid');
 	if (move[1] <= move[0]) return GetFalseValidationResult('[IsMovePossible] "to" bigger than "from"');
 	return GetTrueValidationResult();
-}
+};
 
-const AreAllPiecesAtHome: ValidatorFunction = (moveState, board, move) =>  {
+const AreAllPiecesAtHome: ValidatorFunction = (moveState, board, move) => {
 	if (move[1] < 24) return GetTrueValidationResult();
 	const currentBoard = board.getCurrentBoard(moveState.currentPlayer);
 	for (let i = 0; i < 18; i++) {
 		if (currentBoard[i] !== 0) return GetFalseValidationResult('[AreAllPiecesAtHome] not all pieces are at home');
 	}
 	return GetTrueValidationResult();
-}
+};
 
-const AreThereNoAlternativeMoves: ValidatorFunction = (moveState, board, move) =>  {
+const AreThereNoAlternativeMoves: ValidatorFunction = (moveState, board, move) => {
 	if (move[1] <= 24) {
 		return GetTrueValidationResult();
 	}
@@ -61,15 +61,14 @@ const AreThereNoAlternativeMoves: ValidatorFunction = (moveState, board, move) =
 	const opponentBoard = board.getOpponentBoard(moveState.currentPlayer).slice(6, 12);
 	for (let i = 18; i < move[0]; i++) {
 		if (currentBoard[i] > 0) {
-			const opponentBoardClear = i + mv > 23 || opponentBoard[i + mv - 18] === 0
-			if (opponentBoardClear)
-				return GetFalseValidationResult('[AreThereNoAlternativeMoves] there are alternative moves');
+			const opponentBoardClear = i + mv > 23 || opponentBoard[i + mv - 18] === 0;
+			if (opponentBoardClear) return GetFalseValidationResult('[AreThereNoAlternativeMoves] there are alternative moves');
 		}
 	}
 	return GetTrueValidationResult();
-}
+};
 
-const IsOnlyOnePieceFromHead: ValidatorFunction = (moveState, board, move) =>  {
+const IsOnlyOnePieceFromHead: ValidatorFunction = (moveState, board, move) => {
 	const from = move[0];
 	if (from !== 0 || moveState.doneMoves.length === 0) return GetTrueValidationResult();
 	if (moveState.doneMoves.length > 0) {
@@ -90,9 +89,9 @@ const IsOnlyOnePieceFromHead: ValidatorFunction = (moveState, board, move) =>  {
 		if (doneHead > 1) return GetFalseValidationResult('[IsOnlyOnePieceFromHead] head has been done twice already');
 	}
 	return GetTrueValidationResult();
-}
+};
 
-const IsNoSixBlocked: ValidatorFunction = (moveState, board, move) =>  {
+const IsNoSixBlocked: ValidatorFunction = (moveState, board, move) => {
 	const currentBoard = board.getCurrentBoard(moveState.currentPlayer).slice();
 	currentBoard[move[0]] -= 1;
 	if (move[1] < 24) currentBoard[move[1]] += 1;
@@ -110,17 +109,16 @@ const IsNoSixBlocked: ValidatorFunction = (moveState, board, move) =>  {
 	}
 
 	return GetTrueValidationResult();
-}
+};
 
 const validators: ValidatorFunctionsMap = {
-	"IsThereAnyPiece": IsThereAnyPiece,
-	"IsThereNoPieceOnOpponentBoard": IsThereNoPieceOnOpponentBoard,
-	"IsMovePossible": IsMovePossible,
-	"AreAllPiecesAtHome": AreAllPiecesAtHome,
-	"AreThereNoAlternativeMoves": AreThereNoAlternativeMoves,
-	"IsOnlyOnePieceFromHead": IsOnlyOnePieceFromHead,
-	"IsNoSixBlocked": IsNoSixBlocked
-}
+	IsThereAnyPiece: IsThereAnyPiece,
+	IsThereNoPieceOnOpponentBoard: IsThereNoPieceOnOpponentBoard,
+	IsMovePossible: IsMovePossible,
+	AreAllPiecesAtHome: AreAllPiecesAtHome,
+	AreThereNoAlternativeMoves: AreThereNoAlternativeMoves,
+	IsOnlyOnePieceFromHead: IsOnlyOnePieceFromHead,
+	IsNoSixBlocked: IsNoSixBlocked
+};
 
-export {ValidationResult, ValidatorFunction, ValidatorFunctionsMap, validators}
-
+export { ValidationResult, ValidatorFunction, ValidatorFunctionsMap, validators };

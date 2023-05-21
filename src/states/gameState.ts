@@ -1,5 +1,5 @@
-import { Player } from '../player';
-import { Board } from '../board';
+import Player from '../player';
+import Board from '../board';
 
 class GameState {
 	constructor(player1: Player, player2: Player, board?: Board) {

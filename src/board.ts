@@ -1,4 +1,5 @@
-import { Player } from './player';
+import Player from './player';
+
 class Board {
 	constructor(white?: number[], black?: number[]) {
 		if (white) this.whiteBoard = white;
@@ -55,4 +56,4 @@ class Board {
 	}
 }
 
-export { Board };
+export default Board;
