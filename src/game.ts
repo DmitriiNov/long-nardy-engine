@@ -1,6 +1,7 @@
 import { Player } from './player';
-import { GameState, MoveState } from './states';
-import { Engine } from './engine';
+import MoveState from './states/moveState';
+import GameState from './states/gameState';
+import Engine from './engine/engine';
 import { Board } from './board';
 
 type ExportPlayer = {

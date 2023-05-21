@@ -1,5 +1,6 @@
 import {describe, expect, test, beforeAll, beforeEach} from '@jest/globals';
-import { Engine, ValidationResult } from '../src/engine';
+import Engine from '../src/engine/engine';
+import { ValidationResult } from '../src/engine/moveValidators';
 import { Game } from '../src/game';
 
 let game = Game.CreateGame();
