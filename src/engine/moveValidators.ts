@@ -2,7 +2,7 @@ import MoveState from '../states/moveState';
 import Board from '../board';
 
 type ValidatorFunction = (moveState: MoveState, board: Board, move: [number, number]) => ValidationResult;
-type ValidatorFunctionsMap = { [name: string]: ValidatorFunction };
+type ValidatorFunctionsMap = { [key: string]: ValidatorFunction };
 
 class ValidationResult {
 	constructor(public message: string, public valid: boolean) {}
