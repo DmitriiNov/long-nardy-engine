@@ -1,7 +1,7 @@
 import { Game } from '../game';
 import Board from '../board';
 import MoveState from '../states/moveState';
-import { ValidationResult, ValidatorFunction, ValidatorFunctionsMap, validators } from './moveValidators';
+import { ValidationResult, validators } from './moveValidators';
 
 class Engine {
 	constructor(game: Game) {
@@ -9,10 +9,6 @@ class Engine {
 	}
 
 	private game: Game;
-
-	getNumber(n: number): number {
-		return n;
-	}
 
 	GetPossibleMoves(): { [key: number]: number[] } {
 		const ms = this.game.GetCurrentMoveState();
@@ -32,16 +28,16 @@ class Engine {
 				let currentPoint = i;
 				for (let j = 0; j < permutation.length; j++) {
 					const validationResult = this.IsMoveValid(newMoveState, newBoard, [currentPoint, currentPoint + permutation[j]]);
-					if (validationResult.IsValid()) {
-						newMoveState.remainingMoves.splice(newMoveState.remainingMoves.indexOf(permutation[j]), 1);
-						newMoveState.doneMoves.push([currentPoint, currentPoint + permutation[j]]);
-						newBoard.move(newMoveState.currentPlayer, currentPoint, currentPoint + permutation[j]);
-						currentPoint += permutation[j];
-						const found = possibleMoves.find((v) => v === currentPoint);
-						if (!found) possibleMoves.push(currentPoint);
-					} else {
+					if (!validationResult.IsValid()) {
 						j = Infinity;
+						continue;
 					}
+					newMoveState.remainingMoves.splice(newMoveState.remainingMoves.indexOf(permutation[j]), 1);
+					newMoveState.doneMoves.push([currentPoint, currentPoint + permutation[j]]);
+					newBoard.move(newMoveState.currentPlayer, currentPoint, currentPoint + permutation[j]);
+					currentPoint += permutation[j];
+					const found = possibleMoves.find((v) => v === currentPoint);
+					if (!found) possibleMoves.push(currentPoint);
 				}
 			}
 			if (possibleMoves.length > 0) {
@@ -51,7 +47,7 @@ class Engine {
 		return moves;
 	}
 
-	getAllUniquePermutations(nums: number[]): number[][] {
+	private getAllUniquePermutations(nums: number[]): number[][] {
 		if (nums.length === 0) return [];
 		if (nums.length === 2) {
 			if (nums[0] === nums[1]) return [[nums[0], nums[1]]];
@@ -69,7 +65,7 @@ class Engine {
 		return this.makeMove(ms, board, move);
 	}
 
-	makeMove(ms: MoveState, board: Board, move: [number, number]): boolean {
+	private makeMove(ms: MoveState, board: Board, move: [number, number]): boolean {
 		const moveLength = move[1] - move[0];
 		const moves = ms.remainingMoves;
 
@@ -88,22 +84,22 @@ class Engine {
 			const newBoard = board.getBoardCopy();
 
 			const isValid = this.validateMove(newMoveState, newBoard, usedMoves, move[0]);
-			if (isValid) {
-				const movestate = this.game.GetCurrentMoveState();
-				if (movestate) {
-					movestate.setRemainingMoves(newMoveState.remainingMoves);
-					movestate.setDoneMoves(newMoveState.doneMoves);
-				}
-				const originBoard = this.game.GetBoard();
-				if (originBoard) originBoard.ApplyBoard(newBoard);
+			if (!isValid) continue;
 
-				return true;
+			const movestate = this.game.GetCurrentMoveState();
+			if (movestate) {
+				movestate.setRemainingMoves(newMoveState.remainingMoves);
+				movestate.setDoneMoves(newMoveState.doneMoves);
 			}
+			const originBoard = this.game.GetBoard();
+			if (originBoard) originBoard.ApplyBoard(newBoard);
+
+			return true;
 		}
 		return false;
 	}
 
-	validateMove(moveState: MoveState, board: Board, moves: number[], from: number): boolean {
+	private validateMove(moveState: MoveState, board: Board, moves: number[], from: number): boolean {
 		let currentPoint = from;
 		for (const move of moves) {
 			const validationResult = this.IsMoveValid(moveState, board, [currentPoint, currentPoint + move]);

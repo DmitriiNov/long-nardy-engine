@@ -30,25 +30,25 @@ type ExportGame = {
 	engine?: {};
 };
 
-function HasGameState<Return>(
-	target: (this: Game, ...args: any[]) => Return,
-	context: ClassMethodDecoratorContext<Game, (this: Game, ...args: any[]) => Return>
-) {
-	return function (this: Game, ...args: any[]): Return {
-		if (!this.HasGameState()) throw new Error('Game not initialized');
-		return target.call(this, ...args);
-	};
-}
+// function HasGameState<Return>(
+// 	target: (this: Game, ...args: any[]) => Return,
+// 	context: ClassMethodDecoratorContext<Game, (this: Game, ...args: any[]) => Return>
+// ) {
+// 	return function (this: Game, ...args: any[]): Return {
+// 		if (!this.HasGameState()) throw new Error('Game not initialized');
+// 		return target.call(this, ...args);
+// 	};
+// }
 
-function HasMoveState<Return>(
-	target: (this: Game, ...args: any[]) => Return,
-	context: ClassMethodDecoratorContext<Game, (this: Game, ...args: any[]) => Return>
-) {
-	return function (this: Game, ...args: any[]): Return {
-		if (!this.HasMoveState()) throw new Error('Move not initialized');
-		return target.call(this, ...args);
-	};
-}
+// function HasMoveState<Return>(
+// 	target: (this: Game, ...args: any[]) => Return,
+// 	context: ClassMethodDecoratorContext<Game, (this: Game, ...args: any[]) => Return>
+// ) {
+// 	return function (this: Game, ...args: any[]): Return {
+// 		if (!this.HasMoveState()) throw new Error('Move not initialized');
+// 		return target.call(this, ...args);
+// 	};
+// }
 
 class Game {
 	private constructor(gameState?: GameState, moveState?: MoveState) {

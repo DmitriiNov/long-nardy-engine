@@ -112,13 +112,13 @@ const IsNoSixBlocked: ValidatorFunction = (moveState, board, move) => {
 };
 
 const validators: ValidatorFunctionsMap = {
-	IsThereAnyPiece: IsThereAnyPiece,
-	IsThereNoPieceOnOpponentBoard: IsThereNoPieceOnOpponentBoard,
-	IsMovePossible: IsMovePossible,
-	AreAllPiecesAtHome: AreAllPiecesAtHome,
-	AreThereNoAlternativeMoves: AreThereNoAlternativeMoves,
-	IsOnlyOnePieceFromHead: IsOnlyOnePieceFromHead,
-	IsNoSixBlocked: IsNoSixBlocked
+	IsThereAnyPiece,
+	IsThereNoPieceOnOpponentBoard,
+	IsMovePossible,
+	AreAllPiecesAtHome,
+	AreThereNoAlternativeMoves,
+	IsOnlyOnePieceFromHead,
+	IsNoSixBlocked
 };
 
 export { ValidationResult, ValidatorFunction, ValidatorFunctionsMap, validators };

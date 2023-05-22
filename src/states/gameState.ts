@@ -8,11 +8,13 @@ class GameState {
 		if (board) this.board = board;
 		else this.board = new Board();
 	}
+
+	readonly board: Board;
 	readonly player1: Player;
 	readonly player2: Player;
+
 	private winner?: Player;
 	private gameEnded: boolean = false;
-	readonly board: Board;
 
 	EndGame() {
 		this.gameEnded = true;
