@@ -7,7 +7,7 @@ npm install long-nardy-engine
 ```
 
 Usage
-```
+```typescript
 import { Game } from 'long-nardy-engine';
 
 const game = Game.CreateGame();
