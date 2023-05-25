@@ -29,6 +29,7 @@ const IsThereAnyPiece: ValidatorFunction = (moveState, board, move) => {
 const IsThereNoPieceOnOpponentBoard: ValidatorFunction = (moveState, board, move) => {
 	let to = move[1];
 	if (to > 23) return GetTrueValidationResult();
+
 	const currentBoard = board.getOpponentBoard(moveState.currentPlayer);
 	to += 12;
 	if (to > 23) to -= 24;
@@ -71,23 +72,21 @@ const AreThereNoAlternativeMoves: ValidatorFunction = (moveState, board, move) =
 const IsOnlyOnePieceFromHead: ValidatorFunction = (moveState, board, move) => {
 	const from = move[0];
 	if (from !== 0 || moveState.doneMoves.length === 0) return GetTrueValidationResult();
-	if (moveState.doneMoves.length > 0) {
-		let doneHead = 0;
-		moveState.doneMoves.forEach((doneMove) => {
-			if (doneMove[0] === 0) doneHead++;
-		});
-		if (doneHead === 1) {
-			const isRightDouble = moveState.dices[0] === moveState.dices[1] && [6, 4, 3].indexOf(moveState.dices[0]) !== -1;
-			if (moveState.dices[0] === 4) {
-				const opponentBoard = board.getOpponentBoard(moveState.currentPlayer).slice(6, 12);
-				if (opponentBoard[20] !== 0) return GetFalseValidationResult('[IsOnlyOnePieceFromHead] no possible moves with two heads');
-			}
-			const result = moveState.moveNumber < 3 && isRightDouble;
-			if (result) return GetTrueValidationResult();
-			return GetFalseValidationResult('[IsOnlyOnePieceFromHead] head has been done');
+	let doneHead = 0;
+	moveState.doneMoves.forEach((doneMove) => {
+		if (doneMove[0] === 0) doneHead++;
+	});
+	if (doneHead === 1) {
+		const isRightDouble = moveState.dices[0] === moveState.dices[1] && [6, 4, 3].indexOf(moveState.dices[0]) !== -1;
+		if (moveState.dices[0] === 4) {
+			const opponentBoard = board.getOpponentBoard(moveState.currentPlayer).slice(6, 12);
+			if (opponentBoard[20] !== 0) return GetFalseValidationResult('[IsOnlyOnePieceFromHead] no possible moves with two heads');
 		}
-		if (doneHead > 1) return GetFalseValidationResult('[IsOnlyOnePieceFromHead] head has been done twice already');
+		const result = moveState.moveNumber < 3 && isRightDouble;
+		if (result) return GetTrueValidationResult();
+		return GetFalseValidationResult('[IsOnlyOnePieceFromHead] head has been done');
 	}
+	if (doneHead > 1) return GetFalseValidationResult('[IsOnlyOnePieceFromHead] head has been done twice already');
 	return GetTrueValidationResult();
 };
 

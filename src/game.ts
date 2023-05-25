@@ -124,7 +124,7 @@ class Game {
 		if (this.gameState === null) {
 			throw new Error('Game not initialized');
 		}
-		return this.gameState.board;
+		return this.gameState.board.getBoardCopy();
 	}
 
 	GetPossibleMoves(): { [key: number]: number[] } {
@@ -142,7 +142,7 @@ class Game {
 		return this.moveState;
 	}
 
-	EndMove() {
+	EndMove(): boolean {
 		if (!this.gameState) throw new Error('Game is not initialized');
 		if (!this.moveState) throw new Error('Move is not initialized');
 		const possibleMoves = this.GetPossibleMoves();

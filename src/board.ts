@@ -15,8 +15,8 @@ class Board {
 				.map((_, i) => (i === 0 ? 15 : 0));
 	}
 
-	whiteBoard: number[] = [];
-	blackBoard: number[] = [];
+	private whiteBoard: number[] = [];
+	private blackBoard: number[] = [];
 
 	getCurrentBoard(player: Player): number[] {
 		return player.isFirst ? this.whiteBoard : this.blackBoard;
@@ -28,7 +28,7 @@ class Board {
 
 	move(player: Player, from: number, to: number) {
 		const brd = player.isFirst ? this.whiteBoard : this.blackBoard;
-		if (from < 24) brd[from] -= 1;
+		if (from < 24) brd[from] = brd[from] > 0 ? (brd[from] -= 1) : 0;
 		if (to < 24) brd[to] += 1;
 	}
 
