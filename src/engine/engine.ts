@@ -14,6 +14,10 @@ class Engine {
 		const ms = this.game.GetCurrentMoveState();
 		if (ms.remainingMoves.length === 0) return {};
 		const board = this.game.GetBoard();
+		return this.getPossibleMoves(ms, board);
+	}
+
+	private getPossibleMoves(ms: MoveState, board: Board): { [key: number]: number[] } {
 		const currentBoardCopy = board.getCurrentBoard(ms.currentPlayer).slice();
 
 		const moves: { [key: number]: number[] } = {};
