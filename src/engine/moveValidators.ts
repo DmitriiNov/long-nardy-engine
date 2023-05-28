@@ -61,10 +61,8 @@ const AreThereNoAlternativeMoves: ValidatorFunction = (moveState, board, move) =
 	const currentBoard = board.getCurrentBoard(moveState.currentPlayer);
 	const opponentBoard = board.getOpponentBoard(moveState.currentPlayer).slice(6, 12);
 	for (let i = 18; i < move[0]; i++) {
-		if (currentBoard[i] > 0) {
-			const opponentBoardClear = i + mv > 23 || opponentBoard[i + mv - 18] === 0;
-			if (opponentBoardClear) return GetFalseValidationResult('[AreThereNoAlternativeMoves] there are alternative moves');
-		}
+		if (currentBoard[i] > 0)
+			return GetFalseValidationResult('[AreThereNoAlternativeMoves] there are alternative moves');
 	}
 	return GetTrueValidationResult();
 };
