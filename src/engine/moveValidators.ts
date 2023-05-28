@@ -54,9 +54,8 @@ const AreAllPiecesAtHome: ValidatorFunction = (moveState, board, move) => {
 };
 
 const AreThereNoAlternativeMoves: ValidatorFunction = (moveState, board, move) => {
-	if (move[1] <= 24) {
-		return GetTrueValidationResult();
-	}
+	if (move[1] <= 24) return GetTrueValidationResult();
+
 	const mv = move[1] - move[0];
 	const currentBoard = board.getCurrentBoard(moveState.currentPlayer);
 	const opponentBoard = board.getOpponentBoard(moveState.currentPlayer).slice(6, 12);
