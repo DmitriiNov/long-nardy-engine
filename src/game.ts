@@ -10,6 +10,7 @@ type ExportPlayer = {
 
 type ExportGame = {
 	gameState?: {
+		moveCounter: number;
 		player1: ExportPlayer;
 		player2: ExportPlayer;
 		board: {
@@ -169,15 +170,14 @@ class Game {
 		if (this.gameState.HasGameEnded()) throw new Error('Game has been ended');
 		if (this.moveState === null) {
 			const currentPlayer = this.gameState.player1.isFirst ? this.gameState.player1 : this.gameState.player2;
-			this.moveState = new MoveState(1, currentPlayer, dices || null, null, null);
+			this.moveState = new MoveState(this.gameState.GetMoveCount(), currentPlayer, dices || null, null, null);
 			return this.moveState.dices;
 		}
 
 		if (!this.moveState?.isMoveEnded()) throw new Error('Previous move is not ended');
-
+		this.gameState.IncrementMoveCounter();
 		const currPlayer = this.moveState.currentPlayer === this.gameState.player1 ? this.gameState.player2 : this.gameState.player1;
-		const moveNumber = this.moveState.moveNumber + 1;
-		this.moveState = new MoveState(this.moveState === null ? 1 : this.moveState.moveNumber + 1, currPlayer, dices || null, null, null);
+		this.moveState = new MoveState(this.gameState.GetMoveCount(), currPlayer, dices || null, null, null);
 		return this.moveState.dices;
 	}
 
@@ -203,7 +203,7 @@ class Game {
 			const player1 = new Player(gs.player1?.isFirst ? true : false);
 			const player2 = new Player(!player1.isFirst);
 			const board = new Board(gs.board?.whiteBoard || undefined, gs.board?.blackBoard || undefined);
-			gameState = new GameState(player1, player2, board);
+			gameState = new GameState(player1, player2, board, gs.moveCounter ?? 0);
 			if (gs.gameEnded) gameState.EndGame();
 			if (gs.winner) {
 				const isWinnerFirst = !!gs.winner.isFirst;

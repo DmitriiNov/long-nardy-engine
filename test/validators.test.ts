@@ -145,6 +145,13 @@ describe('Checking "IsOnlyOnePieceFromHead"', () => {
 		const result = validatorFunction(ms, board, [0, 4]);
 		expect(result?.IsValid()).toEqual(false);
 	});
+
+	test('4x4 problem', () => {
+		const board = new Board();
+		let ms = new MoveState(2, player!, [4, 4], [4, 4], [[0, 8]]);
+		const result = validatorFunction(ms, board, [0, 4]);
+		expect(result).toEqual(trueVal);
+	});
 });
 
 describe('Checking "IsNoSixBlocked"', () => {

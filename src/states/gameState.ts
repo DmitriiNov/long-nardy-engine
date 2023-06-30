@@ -2,11 +2,13 @@ import Player from '../player';
 import Board from '../board';
 
 class GameState {
-	constructor(player1: Player, player2: Player, board?: Board) {
+	constructor(player1: Player, player2: Player, board?: Board, moveCounter?: number) {
 		this.player1 = player1;
 		this.player2 = player2;
 		if (board) this.board = board;
 		else this.board = new Board();
+
+		if (moveCounter) this.moveCounter = moveCounter;
 	}
 
 	readonly board: Board;
@@ -15,6 +17,7 @@ class GameState {
 
 	private winner?: Player;
 	private gameEnded: boolean = false;
+	private moveCounter: number = 1;
 
 	EndGame() {
 		this.gameEnded = true;
@@ -30,6 +33,14 @@ class GameState {
 
 	SetWinner(player: Player) {
 		if (player === this.player1 || player === this.player2) this.winner = player;
+	}
+
+	GetMoveCount(): number {
+		return this.moveCounter;
+	}
+
+	IncrementMoveCounter() {
+		this.moveCounter++;
 	}
 }
 

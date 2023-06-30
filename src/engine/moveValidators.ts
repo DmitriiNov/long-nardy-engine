@@ -75,7 +75,7 @@ const IsOnlyOnePieceFromHead: ValidatorFunction = (moveState, board, move) => {
 	if (doneHead === 1) {
 		const isRightDouble = moveState.dices[0] === moveState.dices[1] && [6, 4, 3].indexOf(moveState.dices[0]) !== -1;
 		if (moveState.dices[0] === 4) {
-			const opponentBoard = board.getOpponentBoard(moveState.currentPlayer).slice(6, 12);
+			const opponentBoard = board.getOpponentBoard(moveState.currentPlayer);
 			if (opponentBoard[20] !== 0) return GetFalseValidationResult('[IsOnlyOnePieceFromHead] no possible moves with two heads');
 		}
 		const result = moveState.moveNumber < 3 && isRightDouble;
