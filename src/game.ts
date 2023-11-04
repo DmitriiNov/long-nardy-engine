@@ -3,6 +3,7 @@ import GameState from './states/gameState';
 import Engine from './engine/engine';
 import Player from './player';
 import Board from './board';
+import MovesTreeNode from './engine/movesTree';
 
 type ExportPlayer = {
 	isFirst: boolean;
@@ -31,25 +32,6 @@ type ExportGame = {
 	engine?: {};
 };
 
-// function HasGameState<Return>(
-// 	target: (this: Game, ...args: any[]) => Return,
-// 	context: ClassMethodDecoratorContext<Game, (this: Game, ...args: any[]) => Return>
-// ) {
-// 	return function (this: Game, ...args: any[]): Return {
-// 		if (!this.HasGameState()) throw new Error('Game not initialized');
-// 		return target.call(this, ...args);
-// 	};
-// }
-
-// function HasMoveState<Return>(
-// 	target: (this: Game, ...args: any[]) => Return,
-// 	context: ClassMethodDecoratorContext<Game, (this: Game, ...args: any[]) => Return>
-// ) {
-// 	return function (this: Game, ...args: any[]): Return {
-// 		if (!this.HasMoveState()) throw new Error('Move not initialized');
-// 		return target.call(this, ...args);
-// 	};
-// }
 
 class Game {
 	private constructor(gameState?: GameState, moveState?: MoveState) {
@@ -88,6 +70,7 @@ class Game {
 		if (!move) throw new Error('No moves have been done yet');
 		this.GetBoard().move(this.GetCurrentPlayer(), move[1], move[0]);
 		this.moveState.remainingMoves.push(move[1] - move[0]);
+		this.CalculateMovesTree();
 		return move;
 	}
 
@@ -132,7 +115,10 @@ class Game {
 		if (this.gameState === null) throw new Error('Game not initialized');
 		if (this.moveState === null) throw new Error('Move not initialized');
 		if (this.moveState.isMoveEnded()) throw new Error('Move already ended');
-		const result = this.engine.GetPossibleMoves();
+		const movesTree = this.moveState.getMovesTree();
+		if (movesTree === null)
+			throw new Error('Moves tree is null');
+		const result = movesTree.nodeToObject();
 		return result;
 	}
 
@@ -141,6 +127,15 @@ class Game {
 			throw new Error('Game not initialized');
 		}
 		return this.moveState;
+	}
+
+	CalculateMovesTree(): MovesTreeNode {
+		if (this.gameState === null || this.moveState === null) {
+			throw new Error('Game or Move not initialized');
+		}
+		const movesTree = this.engine.GetPossibleMovesTree();
+		this.moveState.setMovesTree(movesTree);
+		return movesTree;
 	}
 
 	EndMove(): boolean {
@@ -171,6 +166,7 @@ class Game {
 		if (this.moveState === null) {
 			const currentPlayer = this.gameState.player1.isFirst ? this.gameState.player1 : this.gameState.player2;
 			this.moveState = new MoveState(this.gameState.GetMoveCount(), currentPlayer, dices || null, null, null);
+			this.CalculateMovesTree();
 			return this.moveState.dices;
 		}
 
@@ -178,6 +174,7 @@ class Game {
 		this.gameState.IncrementMoveCounter();
 		const currPlayer = this.moveState.currentPlayer === this.gameState.player1 ? this.gameState.player2 : this.gameState.player1;
 		this.moveState = new MoveState(this.gameState.GetMoveCount(), currPlayer, dices || null, null, null);
+		this.CalculateMovesTree();
 		return this.moveState.dices;
 	}
 
@@ -217,7 +214,9 @@ class Game {
 				if (ms.isEnded) moveState.endMove();
 			}
 		}
-		return new Game(gameState, moveState);
+		const game = new Game(gameState, moveState);
+		game.CalculateMovesTree();
+		return game;
 	}
 
 	private getDiffDices(): [number, number] {

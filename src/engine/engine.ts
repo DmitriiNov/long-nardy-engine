@@ -2,7 +2,7 @@ import { Game } from '../game';
 import Board from '../board';
 import MoveState from '../states/moveState';
 import { ValidationResult, validators } from './moveValidators';
-
+import MovesTreeNode from './movesTree';
 class Engine {
 	constructor(game: Game) {
 		this.game = game;
@@ -10,45 +10,35 @@ class Engine {
 
 	private game: Game;
 
-	GetPossibleMoves(): { [key: number]: number[] } {
+	GetPossibleMovesTree(): MovesTreeNode {
 		const ms = this.game.GetCurrentMoveState();
-		if (ms.remainingMoves.length === 0) return {};
-		const board = this.game.GetBoard();
-		return this.getPossibleMoves(ms, board);
+		const board = this.game.GetBoard().getBoardCopy()
+		let movesTree = this.calculatePossibleMovesTree(ms, board);
+		movesTree.filterMovesTree();
+		return movesTree;
 	}
 
-	private getPossibleMoves(ms: MoveState, board: Board): { [key: number]: number[] } {
-		const currentBoardCopy = board.getCurrentBoard(ms.currentPlayer).slice();
-
-		const moves: { [key: number]: number[] } = {};
-
+	private calculatePossibleMovesTree(ms: MoveState, board: Board): MovesTreeNode {
 		const permutations = this.getAllUniquePermutations(ms.remainingMoves);
+		const movesTree = new MovesTreeNode();
 		for (let i = 0; i < 24; i++) {
-			const possibleMoves: number[] = [];
-			if (currentBoardCopy[i] === 0) continue;
+			if (board.getCurrentBoard(ms.currentPlayer)[i] === 0) continue;
 			for (const permutation of permutations) {
+				const move :[number, number] = [i, i + permutation[0]];
 				const newMoveState = ms.getStateCopy();
 				const newBoard = board.getBoardCopy();
-				let currentPoint = i;
-				for (let j = 0; j < permutation.length; j++) {
-					const validationResult = this.IsMoveValid(newMoveState, newBoard, [currentPoint, currentPoint + permutation[j]]);
-					if (!validationResult.IsValid()) {
-						j = Infinity;
-						continue;
-					}
-					newMoveState.remainingMoves.splice(newMoveState.remainingMoves.indexOf(permutation[j]), 1);
-					newMoveState.doneMoves.push([currentPoint, currentPoint + permutation[j]]);
-					newBoard.move(newMoveState.currentPlayer, currentPoint, currentPoint + permutation[j]);
-					currentPoint += permutation[j];
-					const found = possibleMoves.find((v) => v === currentPoint);
-					if (!found) possibleMoves.push(currentPoint);
-				}
-			}
-			if (possibleMoves.length > 0) {
-				moves[i] = possibleMoves;
+				const MoveValid = this.IsMoveValid(newMoveState, newBoard, move);
+				if (!MoveValid.IsValid())
+					continue;
+				newBoard.move(newMoveState.currentPlayer, move[0], move[1]);
+				newMoveState.remainingMoves.splice(newMoveState.remainingMoves.indexOf(permutation[0]), 1);
+				newMoveState.doneMoves.push(move);
+				const nextMovesTree = this.calculatePossibleMovesTree(newMoveState, newBoard);
+				nextMovesTree.move = move;
+				movesTree.addNextUniqueMove(nextMovesTree);
 			}
 		}
-		return moves;
+		return movesTree;
 	}
 
 	private getAllUniquePermutations(nums: number[]): number[][] {
@@ -70,37 +60,17 @@ class Engine {
 	}
 
 	private makeMove(ms: MoveState, board: Board, move: [number, number]): boolean {
-		const moveLength = move[1] - move[0];
-		const moves = ms.remainingMoves;
+		const movesTree = ms.getMovesTree();
+		if (movesTree === null) return false
 
-		const permutations = this.getAllUniquePermutations(moves);
+		const movesTreeObject = movesTree.nodeToObject();
 
-		for (const perm of permutations) {
-			let sum = 0;
-			let i;
-			for (i = 0; i < perm.length; i++) {
-				sum += perm[i];
-				if (sum === moveLength) break;
-			}
-			if (i === perm.length) continue;
-			const usedMoves = perm.slice(0, i + 1);
-			const newMoveState = ms.getStateCopy();
-			const newBoard = board.getBoardCopy();
+		if (!Array.isArray(movesTreeObject[move[0]]) || !movesTreeObject[move[0]].includes(move[1])) return false;
 
-			const isValid = this.validateMove(newMoveState, newBoard, usedMoves, move[0]);
-			if (!isValid) continue;
-
-			const movestate = this.game.GetCurrentMoveState();
-			if (movestate) {
-				movestate.setRemainingMoves(newMoveState.remainingMoves);
-				movestate.setDoneMoves(newMoveState.doneMoves);
-			}
-			const originBoard = this.game.GetBoard();
-			if (originBoard) originBoard.ApplyBoard(newBoard);
-
-			return true;
-		}
-		return false;
+		ms.setRemainingMoves();
+		ms.addToDoneMoves(move);
+		originBoard.ApplyBoard(newBoard);
+		return true;
 	}
 
 	private validateMove(moveState: MoveState, board: Board, moves: number[], from: number): boolean {

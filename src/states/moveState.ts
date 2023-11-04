@@ -1,3 +1,4 @@
+import MovesTreeNode from '../engine/movesTree';
 import Player from '../player';
 
 class MoveState {
@@ -6,7 +7,7 @@ class MoveState {
 		player: Player,
 		dices: [number, number] | null,
 		remainingMoves: number[] | null,
-		doneMoves: Array<[number, number]> | null
+		doneMoves: Array<[number, number]> | null,
 	) {
 		this.moveNumber = num;
 		this.currentPlayer = player;
@@ -32,6 +33,7 @@ class MoveState {
 	remainingMoves: number[];
 	doneMoves: Array<[number, number]> = [];
 	private isEnded: boolean = false;
+	private movesTree: MovesTreeNode | null = null;
 
 	removeFromRemainingMoves(move: number): boolean {
 		const index = this.remainingMoves.indexOf(move);
@@ -52,14 +54,32 @@ class MoveState {
 
 	endMove() {
 		this.isEnded = true;
+		this.movesTree = null;
 	}
 
 	setRemainingMoves(moves: number[]) {
 		this.remainingMoves = moves;
 	}
 
-	setDoneMoves(moves: Array<[number, number]>) {
-		this.doneMoves = moves;
+	removeFromRemainingMoves(move: number): boolean {
+		const index = this.remainingMoves.indexOf(move);
+		if (index === -1) {
+			return false;
+		}
+		this.remainingMoves.splice(index, 1);
+		return true;
+	}
+
+	addToDoneMoves(move: [number, number]) {
+		this.doneMoves.push(move);
+	}
+
+	setMovesTree(tree: MovesTreeNode | null) {
+		this.movesTree = tree;
+	}
+
+	getMovesTree(): MovesTreeNode | null {
+		return this.movesTree;
 	}
 
 	isMoveEnded() {
@@ -67,7 +87,9 @@ class MoveState {
 	}
 
 	getStateCopy() {
-		return new MoveState(this.moveNumber, this.currentPlayer, [...this.dices], [...this.remainingMoves], [...this.doneMoves]);
+		const ms = new MoveState(this.moveNumber, this.currentPlayer, [...this.dices], [...this.remainingMoves], [...this.doneMoves]);
+		ms.setMovesTree(this.getMovesTree());
+		return ms;
 	}
 }
 
