@@ -36,9 +36,8 @@ class MovesTreeNode {
 			return;
 		let maxDepth = this.calculateMaxDepth();
 		this.clearChildren(1, maxDepth);
-
-		// let maxSum = this.calculateMaxSum();
-		// this.clearChildrenBySum(0, maxSum);
+		let maxSum = this.calculateMaxSum();
+		this.clearChildrenBySum(0, maxSum);
 	}
 
 	printNode(tab: number = 0): string {

@@ -1,12 +1,8 @@
 import { describe, expect, test, beforeAll, beforeEach } from '@jest/globals';
-import Engine from '../src/engine/engine';
 import { ValidationResult, validators } from '../src/engine/moveValidators';
-import { Game } from '../src/game';
 import MoveState from '../src/states/moveState';
 import Player from '../src/player';
 import Board from '../src/board';
-const game = Game.CreateGame();
-let engine = new Engine(game);
 let player = new Player(true);
 const trueVal = new ValidationResult('', true);
 

@@ -5,7 +5,7 @@ type ValidatorFunction = (moveState: MoveState, board: Board, move: [number, num
 type ValidatorFunctionsMap = { [key: string]: ValidatorFunction };
 
 class ValidationResult {
-	constructor(public message: string, public valid: boolean) {}
+	constructor(public message: string, public valid: boolean) { }
 	IsValid() {
 		return this.valid;
 	}
@@ -31,8 +31,9 @@ const IsThereNoPieceOnOpponentBoard: ValidatorFunction = (moveState, board, move
 	if (to > 23) return GetTrueValidationResult();
 
 	const currentBoard = board.getOpponentBoard(moveState.currentPlayer);
-	to += 12;
-	if (to > 23) to -= 24;
+
+	to = (to + 12) % 24;
+
 	if (currentBoard[to] > 0) return GetFalseValidationResult('[IsThereNoPieceOnOpponentBoard] there are pieces on opponent`s board');
 	return GetTrueValidationResult();
 };
@@ -68,22 +69,21 @@ const AreThereNoAlternativeMoves: ValidatorFunction = (moveState, board, move) =
 const IsOnlyOnePieceFromHead: ValidatorFunction = (moveState, board, move) => {
 	const from = move[0];
 	if (from !== 0 || moveState.doneMoves.length === 0) return GetTrueValidationResult();
-	let doneHead = 0;
-	moveState.doneMoves.forEach((doneMove) => {
-		if (doneMove[0] === 0) doneHead++;
-	});
-	if (doneHead === 1) {
-		const isRightDouble = moveState.dices[0] === moveState.dices[1] && [6, 4, 3].indexOf(moveState.dices[0]) !== -1;
-		if (moveState.dices[0] === 4) {
-			const opponentBoard = board.getOpponentBoard(moveState.currentPlayer);
-			if (opponentBoard[20] !== 0) return GetFalseValidationResult('[IsOnlyOnePieceFromHead] no possible moves with two heads');
-		}
-		const result = moveState.moveNumber < 3 && isRightDouble;
-		if (result) return GetTrueValidationResult();
-		return GetFalseValidationResult('[IsOnlyOnePieceFromHead] head has been done');
-	}
+
+	let doneHead = moveState.doneMoves.filter((doneMove) => doneMove[0] === 0).length;
+
+	if (doneHead === 0) return GetTrueValidationResult();
 	if (doneHead > 1) return GetFalseValidationResult('[IsOnlyOnePieceFromHead] head has been done twice already');
-	return GetTrueValidationResult();
+
+	if (moveState.dices[0] === 4) {
+		const opponentBoard = board.getOpponentBoard(moveState.currentPlayer);
+		if (opponentBoard[20] !== 0) return GetFalseValidationResult('[IsOnlyOnePieceFromHead] no possible moves with two heads');
+	}
+	
+	const isRightDouble = moveState.dices[0] === moveState.dices[1] && [6, 4, 3].indexOf(moveState.dices[0]) !== -1;
+	const result = moveState.moveNumber < 3 && isRightDouble;
+	if (result) return GetTrueValidationResult();
+	return GetFalseValidationResult('[IsOnlyOnePieceFromHead] head has been done');
 };
 
 const IsNoSixBlocked: ValidatorFunction = (moveState, board, move) => {
