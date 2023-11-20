@@ -86,37 +86,14 @@ const IsOnlyOnePieceFromHead: ValidatorFunction = (moveState, board, move) => {
 	return GetTrueValidationResult();
 };
 
-const IsNoSixBlocked2: ValidatorFunction = (moveState, board, move) => {
-	const currentBoard = board.getCurrentBoard(moveState.currentPlayer).slice();
-	currentBoard[move[0]] -= 1;
-	if (move[1] < 24) currentBoard[move[1]] += 1;
-	const opponentBoard = board.getOpponentBoard(moveState.currentPlayer).slice(12);
-	let k = -1;
-	for (let i = 0; i < 12; i++) {
-		if (currentBoard[i] === 0) k = i;
-		if (i - k > 5) {
-			if (i < 12 || i > 24) {
-				for (let m = i; m < 12; m++) {
-					if (opponentBoard[m] > 0) return GetTrueValidationResult();
-				}
-			} else {
-
-			}
-			return GetFalseValidationResult('[IsNoSixBlocked] blocked six');
-		}
-	}
-
-	return GetTrueValidationResult();
-};
-
 const IsNoSixBlocked: ValidatorFunction = (moveState, board, move) => {
 	let currentBoard = board.getCurrentBoard(moveState.currentPlayer).slice();
 	currentBoard[move[0]] -= 1;
 	if (move[1] < 24) currentBoard[move[1]] += 1;
 	currentBoard = currentBoard.concat(currentBoard.slice(0, 5));
 
-	let opponentBoard = board.getOpponentBoard(moveState.currentPlayer).slice();
-	let opponentSum = opponentBoard.reduce((acc, val) => acc + val, 0);
+	const opponentBoard = board.getOpponentBoard(moveState.currentPlayer).slice();
+	const opponentSum = opponentBoard.reduce((acc, val) => acc + val, 0);
 	if (opponentSum === 0) return GetTrueValidationResult();
 	
 	let k = -1;
