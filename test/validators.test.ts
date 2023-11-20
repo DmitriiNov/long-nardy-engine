@@ -1,6 +1,6 @@
 import { describe, expect, test, beforeAll, beforeEach } from '@jest/globals';
-import { ValidationResult, validators } from '../src/engine/moveValidators';
-import MoveState from '../src/states/moveState';
+import { ValidationResult, validators } from '../src/engine/long-nardy/moveValidators';
+import MoveState from '../src/moveState';
 import Player from '../src/player';
 import Board from '../src/board';
 let player = new Player(true);

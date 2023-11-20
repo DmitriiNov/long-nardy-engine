@@ -2,17 +2,15 @@ import Player from './player';
 
 class Board {
 	constructor(white?: number[], black?: number[]) {
-		if (white) this.whiteBoard = white;
+		if (white)
+			this.whiteBoard = white;
 		else
-			this.whiteBoard = Array(24)
-				.fill(0)
-				.map((_, i) => (i === 0 ? 15 : 0));
-
-		if (black) this.blackBoard = black;
+			this.whiteBoard = Array(24).fill(0)
+				
+		if (black)
+			this.blackBoard = black;
 		else
-			this.blackBoard = Array(24)
-				.fill(0)
-				.map((_, i) => (i === 0 ? 15 : 0));
+			this.blackBoard = Array(24).fill(0);
 	}
 
 	private whiteBoard: number[] = [];

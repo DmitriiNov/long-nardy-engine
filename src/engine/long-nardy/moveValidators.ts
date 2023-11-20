@@ -1,5 +1,5 @@
-import MoveState from '../states/moveState';
-import Board from '../board';
+import MoveState from '../../moveState';
+import Board from '../../board';
 
 type ValidatorFunction = (moveState: MoveState, board: Board, move: [number, number]) => ValidationResult;
 type ValidatorFunctionsMap = { [key: string]: ValidatorFunction };

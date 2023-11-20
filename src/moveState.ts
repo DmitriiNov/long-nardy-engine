@@ -1,5 +1,5 @@
-import MovesTreeNode from '../engine/movesTree';
-import Player from '../player';
+import MovesTreeNode from './engine/movesTree';
+import Player from './player';
 
 class MoveState {
 	constructor(
