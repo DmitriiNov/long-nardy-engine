@@ -163,7 +163,7 @@ describe('Checking "IsNoSixBlocked"', () => {
 		expect(result).toEqual(trueVal);
 	});
 
-	test('Six block by Lesni4iy', () => {
+	test('Six block 1', () => {
 		const board = new Board(
 			Board.ObjectToArray({ 0: 6, 3: 1, 7: 1, 8: 1, 9: 1, 10: 1, 11: 1 }),
 			Board.ObjectToArray({ 0: 7, 11: 1, 13: 1 })
@@ -173,7 +173,7 @@ describe('Checking "IsNoSixBlocked"', () => {
 		expect(result?.IsValid()).toEqual(false);
 	});
 
-	test('Six block by Lesni4iy New ', () => {
+	test('Six block 2 ', () => {
 		const board = new Board(
 			Board.ObjectToArray({ 0: 11, 1: 1, 2: 1, 3: 1, 23: 1 }),
 			Board.ObjectToArray({ 0: 15 })
@@ -183,7 +183,7 @@ describe('Checking "IsNoSixBlocked"', () => {
 		expect(result?.IsValid()).toEqual(false);
 	});
 
-	test('Six block by Lesni4iy New Opposite', () => {
+	test('Six block 2 Opposite', () => {
 		const board = new Board(
 			Board.ObjectToArray({ 0: 11, 1: 1, 2: 1, 3: 1, 23: 1 }),
 			Board.ObjectToArray({ 0: 14, 20: 1 })
@@ -193,7 +193,7 @@ describe('Checking "IsNoSixBlocked"', () => {
 		expect(result).toEqual(trueVal);
 	});
 
-	test('Six block by Lesni4iy Super New ', () => {
+	test('Six block 3', () => {
 		const board = new Board(
 			Board.ObjectToArray({ 22: 1, 21: 1, 20:1, 19:1, 18: 1, 17: 0, 16: 1 }),
 			Board.ObjectToArray({ 0: 15 })
@@ -203,7 +203,7 @@ describe('Checking "IsNoSixBlocked"', () => {
 		expect(result?.IsValid()).toEqual(false);
 	});
 
-	test('Six block by Lesni4iy Super New Opposite', () => {
+	test('Six block 3 Opposite', () => {
 		const board = new Board(
 			Board.ObjectToArray({ 22: 1, 21: 1, 20:1, 19:1, 18: 1, 17: 0, 16: 1 }),
 			Board.ObjectToArray({ 0: 14, 13: 1 })
