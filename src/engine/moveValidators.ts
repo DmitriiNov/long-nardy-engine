@@ -95,12 +95,12 @@ const IsNoSixBlocked: ValidatorFunction = (moveState, board, move) => {
 	const opponentBoard = board.getOpponentBoard(moveState.currentPlayer).slice();
 	const opponentSum = opponentBoard.reduce((acc, val) => acc + val, 0);
 	if (opponentSum === 0) return GetTrueValidationResult();
-	
+
 	let k = -1;
 	for (let i = 0; i < currentBoard.length; i++) {
 		if (currentBoard[i] === 0) k = i;
 		if (i - k <= 5) continue;
-			
+
 		let index = i > 24 ? i - 24 : i;
 		index = index < 12 ? index + 12 : index - 12;
 
