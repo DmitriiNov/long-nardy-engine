@@ -5,7 +5,7 @@ type ValidatorFunction = (moveState: MoveState, board: Board, move: [number, num
 type ValidatorFunctionsMap = { [key: string]: ValidatorFunction };
 
 class ValidationResult {
-	constructor(public message: string, public valid: boolean) { }
+	constructor(public message: string, public valid: boolean) {}
 	IsValid() {
 		return this.valid;
 	}
@@ -79,7 +79,7 @@ const IsOnlyOnePieceFromHead: ValidatorFunction = (moveState, board, move) => {
 		const opponentBoard = board.getOpponentBoard(moveState.currentPlayer);
 		if (opponentBoard[20] !== 0) return GetFalseValidationResult('[IsOnlyOnePieceFromHead] no possible moves with two heads');
 	}
-	
+
 	const isRightDouble = moveState.dices[0] === moveState.dices[1] && [6, 4, 3].indexOf(moveState.dices[0]) !== -1;
 	const result = moveState.moveNumber < 3 && isRightDouble;
 	if (result) return GetTrueValidationResult();

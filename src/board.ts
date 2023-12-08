@@ -1,39 +1,34 @@
 import Player from './player';
 
 class Board {
-	constructor(white?: number[], black?: number[]) {
-		if (white)
-			this.whiteBoard = white;
-		else
-			this.whiteBoard = Array(24).fill(0)
-				
-		if (black)
-			this.blackBoard = black;
-		else
-			this.blackBoard = Array(24).fill(0);
+	constructor(white: number[], black: number[]) {
+		this.whiteBoard = white;
+		this.blackBoard = black;
 	}
 
 	private whiteBoard: number[] = [];
 	private blackBoard: number[] = [];
 
 	getCurrentBoard(player: Player): number[] {
-		return player.isFirst ? this.whiteBoard : this.blackBoard;
+		return player.isWhite ? this.whiteBoard.slice() : this.blackBoard.slice();
 	}
 
 	getOpponentBoard(player: Player): number[] {
-		return player.isFirst ? this.blackBoard : this.whiteBoard;
+		return player.isWhite ? this.blackBoard.slice() : this.whiteBoard.slice();
 	}
 
-	move(player: Player, from: number, to: number) {
-		const brd = player.isFirst ? this.whiteBoard : this.blackBoard;
-		if (from < 24) brd[from] = brd[from] > 0 ? (brd[from] -= 1) : 0;
-		if (to < 24) brd[to] += 1;
+	addPiece(player: Player, index: number) {
+		const board = player.isWhite ? this.whiteBoard : this.blackBoard;
+		if (index > 0 && board.length > index) board[index]++;
+	}
+
+	removePiece(player: Player, index: number) {
+		const board = player.isWhite ? this.whiteBoard : this.blackBoard;
+		if (index > 0 && board.length > index) board[index]--;
 	}
 
 	getBoardCopy(): Board {
-		const board = new Board();
-		board.whiteBoard = this.whiteBoard.slice();
-		board.blackBoard = this.blackBoard.slice();
+		const board = new Board(this.whiteBoard.slice(), this.blackBoard.slice());
 		return board;
 	}
 
@@ -42,13 +37,13 @@ class Board {
 		this.blackBoard = board.blackBoard.slice();
 	}
 
-	CountPieces(player: Player): number {
-		const count = (player.isFirst ? this.whiteBoard : this.blackBoard).reduce((acc, val) => acc + val, 0);
-		return count;
+	countPieces(isWhite: boolean): number {
+		const board = isWhite ? this.whiteBoard : this.blackBoard;
+		return board.reduce((acc, curr) => acc + curr, 0);
 	}
 
-	static ObjectToArray(pieces: { [key: number]: number }): number[] {
-		return Array(24)
+	static ObjectToArray(length: number, pieces: { [key: number]: number }): number[] {
+		return Array(length)
 			.fill(0)
 			.map((_, i) => (pieces[i] && pieces[i] > 0 ? pieces[i] : 0));
 	}

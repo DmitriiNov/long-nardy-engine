@@ -1,67 +1,38 @@
-import MovesTreeNode from './engine/movesTree';
+import MovesTreeNode from './movesTree';
 import Player from './player';
 
 class MoveState {
-	constructor(
-		num: number,
-		player: Player,
-		dices: [number, number] | null,
-		remainingMoves: number[] | null,
-		doneMoves: Array<[number, number]> | null,
-	) {
-		this.moveNumber = num;
-		this.currentPlayer = player;
-		if (dices !== null) {
-			this.dices = dices;
-		}
-		this.remainingMoves = [this.dices[0], this.dices[1]];
-		if (this.dices[0] === this.dices[1]) {
-			this.remainingMoves.push(this.dices[0], this.dices[1]);
-		}
-		if (remainingMoves !== null) {
-			this.remainingMoves = remainingMoves;
-		}
-		if (doneMoves !== null) {
-			this.doneMoves = doneMoves;
-		}
-		remainingMoves?.sort((a, b) => a - b);
-	}
-
 	readonly moveNumber: number;
 	readonly currentPlayer: Player;
-	readonly dices: [number, number] = [this.getRandomDice(), this.getRandomDice()];
-	remainingMoves: number[];
-	doneMoves: Array<[number, number]> = [];
+	readonly dices: [number, number];
+
+	private remainingMoves: number[] = [];
+	private doneMoves: Array<[number, number]> = [];
 	private isEnded: boolean = false;
+
 	private movesTree: MovesTreeNode | null = null;
 
-	removeFromRemainingMoves(move: number): boolean {
-		const index = this.remainingMoves.indexOf(move);
-		if (index === -1) {
-			return false;
-		}
-		this.remainingMoves.splice(index, 1);
-		return true;
-	}
-
-	addMove(move: [number, number]): void {
-		this.doneMoves.push(move);
-	}
-
-	getRandomDice(): number {
-		return Math.floor(Math.random() * 6) + 1;
+	constructor(num: number, player: Player, dices: [number, number], remainingMoves: number[], doneMoves: [number, number][]) {
+		this.moveNumber = num;
+		this.currentPlayer = player;
+		this.dices = dices;
+		this.remainingMoves = remainingMoves;
+		this.doneMoves = doneMoves;
+		remainingMoves.sort((a, b) => a - b);
 	}
 
 	endMove() {
 		this.isEnded = true;
-		this.movesTree = null;
 	}
 
-	setRemainingMoves(moves: number[]) {
-		this.remainingMoves = moves;
+	addToRemainingMoves(move: number): boolean {
+		if (this.isEnded) return false;
+		this.remainingMoves.push(move);
+		return true;
 	}
 
 	removeFromRemainingMoves(move: number): boolean {
+		if (this.isEnded) return false;
 		const index = this.remainingMoves.indexOf(move);
 		if (index === -1) {
 			return false;
@@ -70,8 +41,18 @@ class MoveState {
 		return true;
 	}
 
-	addToDoneMoves(move: [number, number]) {
+	addToDoneMoves(move: [number, number]): boolean {
+		if (this.isEnded) return false;
 		this.doneMoves.push(move);
+		return true;
+	}
+
+	removeFromDoneMoves(move: [number, number]): boolean {
+		if (this.isEnded) return false;
+		const index = this.doneMoves.findIndex((m) => m[0] === move[0] && m[1] === move[1]);
+		if (index === -1) return false;
+		this.doneMoves.splice(index, 1);
+		return true;
 	}
 
 	setMovesTree(tree: MovesTreeNode | null) {
@@ -79,6 +60,7 @@ class MoveState {
 	}
 
 	getMovesTree(): MovesTreeNode | null {
+		if (this.isEnded) return null;
 		return this.movesTree;
 	}
 
@@ -86,9 +68,16 @@ class MoveState {
 		return this.isEnded;
 	}
 
-	getStateCopy() {
-		const ms = new MoveState(this.moveNumber, this.currentPlayer, [...this.dices], [...this.remainingMoves], [...this.doneMoves]);
+	setRemainingMoves(moves: number[]) {
+		this.remainingMoves = moves;
+	}
+
+	getCopy(): MoveState {
+		const ms = new MoveState(this.moveNumber, this.currentPlayer, this.dices, this.remainingMoves.slice(), this.doneMoves.slice());
 		ms.setMovesTree(this.getMovesTree());
+		if (this.isEnded) {
+			ms.endMove();
+		}
 		return ms;
 	}
 }
