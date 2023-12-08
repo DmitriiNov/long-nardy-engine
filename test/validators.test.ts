@@ -238,6 +238,15 @@ describe('Checking "IsNoSixBlocked"', () => {
 		const result = validatorFunction(ms, board, [2, 7]);
 		expect(result).toEqual(trueVal);
 	});
+
+	test('Six block from support dude', () => {
+		const board = new Board(
+			[0,0,0,0,2,0,0,0,0,0,0,0,3,2,1,0,1,6,0,0,0,0,0,0],
+			[0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,1,0,2,3,0,2,1,1,0],);
+		let ms = new MoveState(12, player!, [4, 2], [4, 2], []);
+		const result = validatorFunction(ms, board, [15, 19]);
+		expect(result?.IsValid()).toEqual(false);
+	});
 });
 
 describe('Checking "AreAllPiecesAtHome"', () => {
