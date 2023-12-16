@@ -19,12 +19,12 @@ class Board {
 
 	addPiece(player: Player, index: number) {
 		const board = player.isWhite ? this.whiteBoard : this.blackBoard;
-		if (index > 0 && board.length > index) board[index]++;
+		if (index >= 0 && board.length > index) board[index]++;
 	}
 
 	removePiece(player: Player, index: number) {
 		const board = player.isWhite ? this.whiteBoard : this.blackBoard;
-		if (index > 0 && board.length > index) board[index]--;
+		if (index >= 0 && board.length > index) board[index]--;
 	}
 
 	getBoardCopy(): Board {

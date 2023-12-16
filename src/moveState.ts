@@ -55,6 +55,14 @@ class MoveState {
 		return true;
 	}
 
+	getDoneMoves(): Array<[number, number]> {
+		return this.doneMoves;
+	}
+
+	popLastDoneMove(): [number, number] | null {
+		return this.doneMoves.pop() || null;
+	}
+
 	setMovesTree(tree: MovesTreeNode | null) {
 		this.movesTree = tree;
 	}
