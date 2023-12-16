@@ -41,6 +41,10 @@ class MoveState {
 		return true;
 	}
 
+	getRemainingMoves(): number[] {
+		return this.remainingMoves;
+	}
+
 	addToDoneMoves(move: [number, number]): boolean {
 		if (this.isEnded) return false;
 		this.doneMoves.push(move);
