@@ -21,7 +21,7 @@ function GetTrueValidationResult() {
 
 const IsThereAnyPiece: ValidatorFunction = (moveState, board, move) => {
 	const from = move[0];
-	const currentBoard = board.getCurrentBoard(moveState.currentPlayer);
+	const currentBoard = board.getCurrentBoard(moveState.isWhiteTurn());
 	if (currentBoard[from] <= 0) return GetFalseValidationResult('[IsThereAnyPiece] no pieces');
 	return GetTrueValidationResult();
 };
@@ -30,7 +30,7 @@ const IsThereNoPieceOnOpponentBoard: ValidatorFunction = (moveState, board, move
 	let to = move[1];
 	if (to > 23) return GetTrueValidationResult();
 
-	const currentBoard = board.getOpponentBoard(moveState.currentPlayer);
+	const currentBoard = board.getOpponentBoard(moveState.isWhiteTurn());
 
 	to = (to + 12) % 24;
 
@@ -47,7 +47,7 @@ const IsMovePossible: ValidatorFunction = (moveState, board, move) => {
 
 const AreAllPiecesAtHome: ValidatorFunction = (moveState, board, move) => {
 	if (move[1] < 24) return GetTrueValidationResult();
-	const currentBoard = board.getCurrentBoard(moveState.currentPlayer);
+	const currentBoard = board.getCurrentBoard(moveState.isWhiteTurn());
 	for (let i = 0; i < 18; i++) {
 		if (currentBoard[i] !== 0) return GetFalseValidationResult('[AreAllPiecesAtHome] not all pieces are at home');
 	}
@@ -58,8 +58,8 @@ const AreThereNoAlternativeMoves: ValidatorFunction = (moveState, board, move) =
 	if (move[1] <= 24) return GetTrueValidationResult();
 
 	const mv = move[1] - move[0];
-	const currentBoard = board.getCurrentBoard(moveState.currentPlayer);
-	const opponentBoard = board.getOpponentBoard(moveState.currentPlayer).slice(6, 12);
+	const currentBoard = board.getCurrentBoard(moveState.isWhiteTurn());
+	const opponentBoard = board.getOpponentBoard(moveState.isWhiteTurn()).slice(6, 12);
 	for (let i = 18; i < move[0]; i++) {
 		if (currentBoard[i] > 0) return GetFalseValidationResult('[AreThereNoAlternativeMoves] there are alternative moves');
 	}
@@ -75,22 +75,23 @@ const IsOnlyOnePieceFromHead: ValidatorFunction = (moveState, board, move) => {
 	if (doneHead === 0) return GetTrueValidationResult();
 	if (doneHead > 1) return GetFalseValidationResult('[IsOnlyOnePieceFromHead] head has been done twice already');
 
-	if (moveState.dices[0] === 4) {
-		const opponentBoard = board.getOpponentBoard(moveState.currentPlayer);
+	const dices = moveState.getDices();
+	if (dices[0] === 4) {
+		const opponentBoard = board.getOpponentBoard(moveState.isWhiteTurn());
 		if (opponentBoard[20] !== 0) return GetFalseValidationResult('[IsOnlyOnePieceFromHead] no possible moves with two heads');
 	}
 
-	const isRightDouble = moveState.dices[0] === moveState.dices[1] && [6, 4, 3].indexOf(moveState.dices[0]) !== -1;
-	const result = moveState.moveNumber < 3 && isRightDouble;
+	const isRightDouble = dices[0] === dices[1] && [6, 4, 3].indexOf(dices[0]) !== -1;
+	const result = moveState.getMoveNumber() < 3 && isRightDouble;
 	if (result) return GetTrueValidationResult();
 	return GetFalseValidationResult('[IsOnlyOnePieceFromHead] head has been done');
 };
 
 const IsNoSixBlocked: ValidatorFunction = (moveState, board, move) => {
-	const currentBoard = board.getCurrentBoard(moveState.currentPlayer).slice();
+	const currentBoard = board.getCurrentBoard(moveState.isWhiteTurn()).slice();
 	currentBoard[move[0]] -= 1;
 	if (move[1] < 24) currentBoard[move[1]] += 1;
-	const opponentBoard = board.getOpponentBoard(moveState.currentPlayer).slice(12);
+	const opponentBoard = board.getOpponentBoard(moveState.isWhiteTurn()).slice(12);
 
 	let k = -1;
 	for (let i = 0; i < 12; i++) {

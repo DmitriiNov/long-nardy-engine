@@ -9,21 +9,21 @@ class Board {
 	private whiteBoard: number[] = [];
 	private blackBoard: number[] = [];
 
-	getCurrentBoard(player: Player): number[] {
-		return player.isWhite ? this.whiteBoard.slice() : this.blackBoard.slice();
+	getCurrentBoard(isWhite: boolean): number[] {
+		return isWhite ? this.whiteBoard.slice() : this.blackBoard.slice();
 	}
 
-	getOpponentBoard(player: Player): number[] {
-		return player.isWhite ? this.blackBoard.slice() : this.whiteBoard.slice();
+	getOpponentBoard(isWhite: boolean): number[] {
+		return isWhite ? this.blackBoard.slice() : this.whiteBoard.slice();
 	}
 
-	addPiece(player: Player, index: number) {
-		const board = player.isWhite ? this.whiteBoard : this.blackBoard;
+	addPiece(isWhite: boolean, index: number) {
+		const board = isWhite ? this.whiteBoard : this.blackBoard;
 		if (index >= 0 && board.length > index) board[index]++;
 	}
 
-	removePiece(player: Player, index: number) {
-		const board = player.isWhite ? this.whiteBoard : this.blackBoard;
+	removePiece(isWhite: boolean, index: number) {
+		const board = isWhite ? this.whiteBoard : this.blackBoard;
 		if (index >= 0 && board.length > index) board[index]--;
 	}
 

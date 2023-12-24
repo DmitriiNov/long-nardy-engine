@@ -1,3 +1,5 @@
+import Move from './move';
+
 class MovesTreeNode {
 	move: [number, number] | null = null;
 	nextMoves: Array<MovesTreeNode> | null = null;
@@ -8,6 +10,11 @@ class MovesTreeNode {
 
 	get dice() {
 		return this.move === null ? 0 : this.move[1] - this.move[0];
+	}
+
+	addNextMove(mv: MovesTreeNode) {
+		if (this.nextMoves === null) this.nextMoves = [];
+		this.nextMoves.push(mv);
 	}
 
 	static New(from?: number, to?: number, nextMoves?: Array<MovesTreeNode>): MovesTreeNode {
@@ -65,18 +72,22 @@ class MovesTreeNode {
 		}
 	}
 
-	findIfCombinedMovePossible(from: number, to: number): boolean {
+	findIfCombinedMovePossible(from: number, to: number): Move[] | null {
 		if (this.move !== null) throw new Error('This is not root node');
-		return this.nodeToFind(from, to);
+		const result = this.nodeToFind(from, to, []);
+		return result
 	}
 
-	private nodeToFind(from: number, to: number): boolean {
-		if (this.nextMoves === null) return false;
+	private nodeToFind(from: number, to: number, moves: Move[]): Move[] | null {
+		if (this.nextMoves === null) return null;
+		const copy = [...moves];
 		for (let node of this.nextMoves) {
-			if (node.move && node.move[0] === from && node.move[1] === to) return true;
-			if (node.move && node.move[0] === from && node.move[1] < to) return node.nodeToFind(node.move[1], to);
+			if (!node.move) continue;
+			copy.push(new Move(node.move[0], node.move[1]));
+			if (node.move[0] === from && node.move[1] === to) return copy;
+			if (node.move[0] === from && node.move[1] < to) return node.nodeToFind(node.move[1], to, copy);
 		}
-		return false;
+		return null;
 	}
 
 	filterMovesTree() {
@@ -103,7 +114,8 @@ class MovesTreeNode {
 		if (this.nextMoves === null) return this.dice;
 		return Math.max(...this.nextMoves.map((n) => n.calculateMaxSum())) + this.dice;
 	}
-
+	
+	// These function needed for bot
 	allMovesToArray(): [number, number][][] {
 		if (this.move !== null) throw new Error('This is not root node');
 		const result: [number, number][][] = this.convertToMovesArray();
