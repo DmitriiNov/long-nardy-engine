@@ -177,7 +177,7 @@ describe('Checking "IsNoSixBlocked"', () => {
 		expect(result).toEqual(trueVal);
 	});
 
-	test('Six block by Lesni4iy', () => {
+	test('Six block 1', () => {
 		const board = new Brd(
 			Brd.ObjectToArray({ 0: 6, 3: 1, 7: 1, 8: 1, 9: 1, 10: 1, 11: 1 }),
 			Brd.ObjectToArray({ 0: 7, 11: 1, 13: 1 })
@@ -185,6 +185,37 @@ describe('Checking "IsNoSixBlocked"', () => {
 		let ms = new MoveState(12, true, [3, 6], [3, 6], []);
 		const result = validatorFunction(ms, board.board, [3, 6]);
 		expect(result?.IsValid()).toEqual(false);
+	});
+
+	test('Six block 2 ', () => {
+		const board = new Brd(Brd.ObjectToArray({ 0: 11, 1: 1, 2: 1, 3: 1, 23: 1 }), Brd.ObjectToArray({ 0: 15 }));
+		let ms = new MoveState(12, true, [4, 2], [4, 2], []);
+		const result = validatorFunction(ms, board.board, [0, 4]);
+		expect(result?.IsValid()).toEqual(false);
+	});
+
+	test('Six block 2 Opposite', () => {
+		const board = new Brd(Brd.ObjectToArray({ 0: 11, 1: 1, 2: 1, 3: 1, 23: 1 }), Brd.ObjectToArray({ 0: 14, 20: 1 }));
+		let ms = new MoveState(12, true, [4, 2], [4, 2], []);
+		const result = validatorFunction(ms, board.board, [0, 4]);
+		expect(result).toEqual(trueVal);
+	});
+
+	test('Six block 3', () => {
+		const board = new Brd(Brd.ObjectToArray({ 22: 1, 21: 1, 20: 1, 19: 1, 18: 1, 17: 0, 16: 1 }), Brd.ObjectToArray({ 0: 15 }));
+		let ms = new MoveState(12, true, [1, 1], [1, 1, 1, 1], []);
+		const result = validatorFunction(ms, board.board, [16, 17]);
+		expect(result?.IsValid()).toEqual(false);
+	});
+
+	test('Six block 3 Opposite', () => {
+		const board = new Brd(
+			Brd.ObjectToArray({ 22: 1, 21: 1, 20: 1, 19: 1, 18: 1, 17: 0, 16: 1 }),
+			Brd.ObjectToArray({ 0: 14, 13: 1 })
+		);
+		let ms = new MoveState(12, true, [1, 1], [1, 1, 1, 1], []);
+		const result = validatorFunction(ms, board.board, [16, 17]);
+		expect(result).toEqual(trueVal);
 	});
 
 	test('Six block', () => {
