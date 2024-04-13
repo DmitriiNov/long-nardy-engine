@@ -81,15 +81,16 @@ class Game {
 		if (!ok) throw new Error('Move is not possible');
 	}
 
-	StartMove(dices: [number, number] | null) {
+	StartMove(dices: [number, number] | null): [number, number] {
 		if (dices === null) {
 			dices = [this.getDice(), this.getDice()]
 		}
-		if (this.ended)	throw new Error('Game is ended');
+		if (this.ended) throw new Error('Game is ended');
 		if (this.board === null) throw new Error('Movestate or board is null');
 		const moveState = this.engine!.StartMove(this.moveState, this.board, dices);
 		if (moveState === null) throw new Error('Start Move is not possible');
 		this.moveState = moveState;
+		return dices;
 	}
 
 	EndMove() {
@@ -113,7 +114,7 @@ class Game {
 		return this.engine!.GetPossibleMoves(this.moveState, this.board);
 	};
 
-	InitGame(dices: [number, number] | null) {
+	InitGame(dices: [number, number] | null): [number, number] {
 		if (this.ended) throw new Error('Game is ended');
 		if (dices === null) {
 			dices = [this.getDice(), this.getDice()]
@@ -124,10 +125,15 @@ class Game {
 		this.player1 = new Player(dices[0] > dices[1]);
 		this.player2 = new Player(dices[0] < dices[1]);
 		this.board = this.engine!.GetNewBoard();
+		return dices;
 	}
 
 	Export(): ExportGame {
 		return JSON.parse(JSON.stringify(this));
+	}
+
+	GetMoveState(): MoveState | null {
+		return this.moveState;
 	}
 
 	static CreateNewGame(type: GameType): Game {
@@ -159,7 +165,7 @@ class Game {
 		game.player1 = player1;
 		game.player2 = player2;
 		game.board = board;
-		
+
 		if (data.ended) {
 			if (data.winner)
 				game.EndGameWithWinner(data.winner.isFirst);
