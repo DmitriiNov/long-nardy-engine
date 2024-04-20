@@ -75,7 +75,8 @@ class MovesTreeNode {
 	findIfCombinedMovePossible(from: number, to: number): Move[] | null {
 		if (this.move !== null) throw new Error('This is not root node');
 		const result = this.nodeToFind(from, to, []);
-		return result
+		console.log(`Check move from: ${from}, to: ${to}, results: ${result}`)
+		return result;
 	}
 
 	private nodeToFind(from: number, to: number, moves: Move[]): Move[] | null {

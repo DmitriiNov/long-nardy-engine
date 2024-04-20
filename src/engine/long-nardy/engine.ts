@@ -28,6 +28,7 @@ class LongNardyEngine implements Engine {
 		}
 		console.debug("MakeMove moves", moves)
 		for (const move of moves) {
+			console.log("MakeMove move", move)
 			board.addPiece(moveState.isWhiteTurn(), move.to);
 			board.removePiece(moveState.isWhiteTurn(), move.from);
 			moveState.addToDoneMoves([move.from, move.to]);
