@@ -129,6 +129,8 @@ class LongNardyEngine implements Engine {
 
 	SetPossibleMoves(moveState: MoveState, board: Board) {
 		const possibleMoves = this.findPossibleMoves(moveState, board);
+		console.log("SetPossibleMoves")
+		console.log(possibleMoves.printNode());
 		moveState.setMovesTree(possibleMoves);
 	}
 
