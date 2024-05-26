@@ -53,9 +53,6 @@ class LongNardyEngine implements Engine {
 	}
 
 	EndMove(moveState: MoveState, board: Board): boolean {
-		if (moveState.isMoveEnded()) {
-			return false;
-		}
 		const possibleMoves = this.GetPossibleMoves(moveState, board);
 		if (Object.keys(possibleMoves).length !== 0) {
 			return false;
