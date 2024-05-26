@@ -23,7 +23,7 @@ type ExportGame = {
 		isPlayerWhite: boolean;
 		moveNumber: number;
 		dices: [number, number];
-		doneMoves: [number, number][];
+		doneMoves: Array<[number, number]>;
 		remainingMoves: number[];
 		isEnded: boolean;
 	};
@@ -44,8 +44,8 @@ class Game {
 	private winner: Player | null = null;
 	private ended: boolean = false;
 
-	private constructor(GameType: GameType) {
-		this.gameType = GameType;
+	private constructor(gameType: GameType) {
+		this.gameType = gameType;
 	}
 
 	private getDice(): number {

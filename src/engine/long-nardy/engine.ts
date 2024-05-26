@@ -13,26 +13,21 @@ class LongNardyEngine implements Engine {
 
 	MakeMove(moveState: MoveState, board: Board, move: Move): boolean {
 		if (moveState.isMoveEnded()) {
-			console.debug("MakeMove moveState.isMoveEnded()")
 			return false;
 		}
 		const movesTree = moveState.getMovesTree();
 		if (movesTree === null) {
-			console.debug("MakeMove movesTree === null")
 			return false;
 		}
 		const moves = movesTree.findIfCombinedMovePossible(move.from, move.to);
 		if (moves === null) {
-			console.debug("MakeMove moves === null")
 			return false;
 		}
-		console.debug("MakeMove moves", moves)
-		for (const move of moves) {
-			console.log("MakeMove move", move)
-			board.addPiece(moveState.isWhiteTurn(), move.to);
-			board.removePiece(moveState.isWhiteTurn(), move.from);
-			moveState.addToDoneMoves([move.from, move.to]);
-			moveState.removeFromRemainingMoves(move.to - move.from);
+		for (const mv of moves) {
+			board.addPiece(moveState.isWhiteTurn(), mv.to);
+			board.removePiece(moveState.isWhiteTurn(), mv.from);
+			moveState.addToDoneMoves([mv.from, mv.to]);
+			moveState.removeFromRemainingMoves(mv.to - mv.from);
 		}
 		this.SetPossibleMoves(moveState, board);
 		return true;
@@ -126,8 +121,6 @@ class LongNardyEngine implements Engine {
 
 	SetPossibleMoves(moveState: MoveState, board: Board) {
 		const possibleMoves = this.findPossibleMoves(moveState, board);
-		console.log("SetPossibleMoves")
-		console.log(possibleMoves.printNode());
 		moveState.setMovesTree(possibleMoves);
 	}
 
