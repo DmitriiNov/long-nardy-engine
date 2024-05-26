@@ -1,233 +1,197 @@
-import MoveState from './states/moveState';
-import GameState from './states/gameState';
-import Engine from './engine/engine';
-import Player from './player';
 import Board from './board';
+import Engine from './engine/engine';
+import LongNardyEngine from './engine/long-nardy/engine';
+import MoveState from './moveState';
+import Player from './player';
+import Move from './move';
 
-type ExportPlayer = {
-	isFirst: boolean;
-};
+enum GameType {
+	Backgammon,
+	LongNardy
+}
 
 type ExportGame = {
-	gameState?: {
-		moveCounter: number;
-		player1: ExportPlayer;
-		player2: ExportPlayer;
-		board: {
-			whiteBoard: number[];
-			blackBoard: number[];
-		};
-		winner?: ExportPlayer;
-		gameEnded: boolean;
+	player1?: Player;
+	player2?: Player;
+	board: {
+		whiteBoard: number[];
+		blackBoard: number[];
 	};
+	winner?: Player;
+	ended: boolean;
 	moveState?: {
-		currentPlayer: ExportPlayer;
+		isPlayerWhite: boolean;
 		moveNumber: number;
 		dices: [number, number];
-		doneMoves: Array<[number, number]>;
+		doneMoves: [number, number][];
 		remainingMoves: number[];
 		isEnded: boolean;
 	};
-	engine?: {};
+	gameType: GameType;
 };
 
-// function HasGameState<Return>(
-// 	target: (this: Game, ...args: any[]) => Return,
-// 	context: ClassMethodDecoratorContext<Game, (this: Game, ...args: any[]) => Return>
-// ) {
-// 	return function (this: Game, ...args: any[]): Return {
-// 		if (!this.HasGameState()) throw new Error('Game not initialized');
-// 		return target.call(this, ...args);
-// 	};
-// }
-
-// function HasMoveState<Return>(
-// 	target: (this: Game, ...args: any[]) => Return,
-// 	context: ClassMethodDecoratorContext<Game, (this: Game, ...args: any[]) => Return>
-// ) {
-// 	return function (this: Game, ...args: any[]): Return {
-// 		if (!this.HasMoveState()) throw new Error('Move not initialized');
-// 		return target.call(this, ...args);
-// 	};
-// }
 
 class Game {
-	private constructor(gameState?: GameState, moveState?: MoveState) {
-		this.engine = new Engine(this);
-		if (gameState) {
-			this.gameState = gameState;
-			if (moveState) this.moveState = moveState;
-		}
-	}
+	private readonly gameType: GameType;
+	private player1: Player | null = null;
+	private player2: Player | null = null;
 
-	private gameState: GameState | null = null;
+	private engine: Engine | null = null;
+
+	private board: Board | null = null;
 	private moveState: MoveState | null = null;
-	private engine: Engine;
 
-	HasGameState(): boolean {
-		return this.gameState !== null;
+	private winner: Player | null = null;
+	private ended: boolean = false;
+
+	private constructor(GameType: GameType) {
+		this.gameType = GameType;
 	}
 
-	HasMoveState(): boolean {
-		return this.gameState !== null;
-	}
-
-	InitGame(dices?: [number, number]): [number, number] {
-		const diceResult = dices || this.getDiffDices();
-		const player1 = new Player(diceResult[0] > diceResult[1]);
-		const player2 = new Player(diceResult[0] < diceResult[1]);
-		this.gameState = new GameState(player1, player2);
-		return diceResult;
-	}
-
-	UndoLastMove(): [number, number] {
-		if (this.moveState === null) throw new Error('Move not initialized');
-		if (this.moveState.isMoveEnded()) throw new Error('Move ended');
-		if (this.moveState.remainingMoves.length === 0) throw new Error('Not possible on the last move');
-		const move = this.moveState.doneMoves.pop();
-		if (!move) throw new Error('No moves have been done yet');
-		this.GetBoard().move(this.GetCurrentPlayer(), move[1], move[0]);
-		this.moveState.remainingMoves.push(move[1] - move[0]);
-		return move;
-	}
-
-	GetPlayers(): [Player, Player] {
-		if (this.gameState === null) {
-			throw new Error('Game not initialized');
-		}
-		return [this.gameState.player1, this.gameState.player2];
-	}
-
-	GetCurrentPlayer(): Player {
-		if (this.moveState === null) {
-			throw new Error('Game not initialized');
-		}
-		return this.moveState.currentPlayer;
-	}
-
-	GetOppositePlayer(): Player {
-		if (this.gameState === null || this.moveState === null) {
-			throw new Error('Game or Move not initialized');
-		}
-		const currPlayer = this.moveState.currentPlayer;
-		return this.moveState.currentPlayer === this.gameState.player1 ? this.gameState.player2 : this.gameState.player1;
-	}
-
-	Move(move: [number, number]): boolean {
-		if (this.gameState === null || this.moveState === null) {
-			throw new Error('Game or Move not initialized');
-		}
-		const isDone = this.engine.MakeMove(move);
-		return isDone;
+	private getDice(): number {
+		return Math.floor(Math.random() * 6) + 1;
 	}
 
 	GetBoard(): Board {
-		if (this.gameState === null) {
-			throw new Error('Game not initialized');
+		if (this.board === null) throw new Error('Board is null');
+		return this.board;
+	}
+
+	GameFinished(): boolean {
+		return this.ended;
+	}
+
+	GetWinner(): Player | null {
+		return this.winner;
+	}
+
+	private EndGameWithWinner(isWhite: boolean | null) {
+		if (isWhite === true) {
+			this.winner = this.player1!.isWhite ? this.player1 : this.player2;
+		} else if (isWhite === false) {
+			this.winner = this.player1!.isWhite ? this.player2 : this.player1;
 		}
-		return this.gameState.board;
+		this.ended = true;
+	}
+
+	MakeMove(move: [number, number]) {
+		if (this.ended) throw new Error('Game is ended');
+		if (this.moveState === null || this.board === null) throw new Error('Movestate or board is null');
+		const ok = this.engine!.MakeMove(this.moveState, this.board, new Move(move[0], move[1]));
+		if (!ok) throw new Error('Move is not possible');
+	}
+
+	StartMove(dices: [number, number] | null): [number, number] {
+		if (dices === null) {
+			dices = [this.getDice(), this.getDice()]
+		}
+		if (this.ended) throw new Error('Game is ended');
+		if (this.board === null) throw new Error('Movestate or board is null');
+		const moveState = this.engine!.StartMove(this.moveState, this.board, dices);
+		if (moveState === null) throw new Error('Start Move is not possible');
+		this.moveState = moveState;
+		return dices;
+	}
+
+	EndMove() {
+		if (this.ended) throw new Error('Game is ended');
+		if (this.moveState === null || this.board === null) throw new Error('Movestate or board is null');
+		const ok = this.engine!.EndMove(this.moveState, this.board);
+		if (!ok) throw new Error('End Move is not possible');
+	}
+
+	UndoLastMove(): [number, number] {
+		if (this.ended) throw new Error('Game is ended');
+		if (this.moveState === null || this.board === null) throw new Error('Movestate or board is null');
+		const lastMove = this.engine!.UndoLastMove(this.moveState, this.board);
+		if (lastMove === null) throw new Error('Undo Move is not possible');
+		return lastMove;
 	}
 
 	GetPossibleMoves(): { [key: number]: number[] } {
-		if (this.gameState === null) throw new Error('Game not initialized');
-		if (this.moveState === null) throw new Error('Move not initialized');
-		if (this.moveState.isMoveEnded()) throw new Error('Move already ended');
-		const result = this.engine.GetPossibleMoves();
-		return result;
-	}
+		if (this.ended) return {};
+		if (this.moveState === null || this.board === null) return {};
+		return this.engine!.GetPossibleMoves(this.moveState, this.board);
+	};
 
-	GetCurrentMoveState(): MoveState {
-		if (this.moveState === null) {
-			throw new Error('Game not initialized');
-		}
-		return this.moveState;
-	}
-
-	EndMove(): boolean {
-		if (!this.gameState) throw new Error('Game is not initialized');
-		if (!this.moveState) throw new Error('Move is not initialized');
-		const possibleMoves = this.GetPossibleMoves();
-		if (Object.keys(possibleMoves).length > 0) return false;
-		this.moveState.endMove();
-		const currPlayerFinished = this.gameState.board.CountPieces(this.GetCurrentPlayer()) === 0;
-		const oppositePlayerFinished = this.gameState.board.CountPieces(this.GetOppositePlayer()) === 0;
-		if (currPlayerFinished && !oppositePlayerFinished) {
-			if (!this.GetCurrentPlayer().isFirst) {
-				this.gameState.EndGame();
-				this.gameState.SetWinner(this.GetCurrentPlayer());
+	InitGame(dices: [number, number] | null): [number, number] {
+		if (this.ended) throw new Error('Game is ended');
+		if (dices === null) {
+			dices = [this.getDice(), this.getDice()]
+			while (dices[0] === dices[1]) {
+				dices[1] = this.getDice();
 			}
-		} else if (!currPlayerFinished && oppositePlayerFinished) {
-			this.gameState.EndGame();
-			this.gameState.SetWinner(this.GetOppositePlayer());
-		} else if (currPlayerFinished && oppositePlayerFinished) {
-			this.gameState.EndGame();
 		}
-		return true;
-	}
-
-	StartMove(dices?: [number, number]): [number, number] {
-		if (!this.gameState) throw new Error('Game is not initialized');
-		if (this.gameState.HasGameEnded()) throw new Error('Game has been ended');
-		if (this.moveState === null) {
-			const currentPlayer = this.gameState.player1.isFirst ? this.gameState.player1 : this.gameState.player2;
-			this.moveState = new MoveState(this.gameState.GetMoveCount(), currentPlayer, dices || null, null, null);
-			return this.moveState.dices;
-		}
-
-		if (!this.moveState?.isMoveEnded()) throw new Error('Previous move is not ended');
-		this.gameState.IncrementMoveCounter();
-		const currPlayer = this.moveState.currentPlayer === this.gameState.player1 ? this.gameState.player2 : this.gameState.player1;
-		this.moveState = new MoveState(this.gameState.GetMoveCount(), currPlayer, dices || null, null, null);
-		return this.moveState.dices;
-	}
-
-	HasGameEnded(): boolean {
-		if (this.gameState) return this.gameState?.HasGameEnded();
-		return false;
-	}
-
-	GetWinner(): Player | undefined {
-		return this.gameState?.GetWinner();
+		this.player1 = new Player(dices[0] > dices[1]);
+		this.player2 = new Player(dices[0] < dices[1]);
+		this.board = this.engine!.GetNewBoard();
+		return dices;
 	}
 
 	Export(): ExportGame {
 		return JSON.parse(JSON.stringify(this));
 	}
 
-	static CreateGame(data?: ExportGame): Game {
-		if (!data) return new Game();
-		let gameState: GameState | undefined;
-		let moveState: MoveState | undefined;
-		if (data.gameState) {
-			const gs = data.gameState;
-			const player1 = new Player(gs.player1?.isFirst ? true : false);
-			const player2 = new Player(!player1.isFirst);
-			const board = new Board(gs.board?.whiteBoard || undefined, gs.board?.blackBoard || undefined);
-			gameState = new GameState(player1, player2, board, gs.moveCounter ?? 0);
-			if (gs.gameEnded) gameState.EndGame();
-			if (gs.winner) {
-				const isWinnerFirst = !!gs.winner.isFirst;
-				gameState.SetWinner(player1.isFirst ? (isWinnerFirst ? player1 : player2) : isWinnerFirst ? player2 : player1);
-			}
-			if (data.moveState) {
-				const ms = data.moveState;
-				const isCurrentPlayerFirst = ms.currentPlayer?.isFirst;
-				const currPlayer = player1.isFirst ? (isCurrentPlayerFirst ? player1 : player2) : isCurrentPlayerFirst ? player2 : player1;
-				moveState = new MoveState(ms.moveNumber || 0, currPlayer, ms.dices, ms.remainingMoves, ms.doneMoves);
-				if (ms.isEnded) moveState.endMove();
-			}
-		}
-		return new Game(gameState, moveState);
+	GetMoveState(): MoveState | null {
+		return this.moveState;
 	}
 
-	private getDiffDices(): [number, number] {
-		const dice1 = Math.floor(Math.random() * 6) + 1;
-		let dice2 = Math.floor(Math.random() * 6) + 1;
-		while (dice1 === dice2) {
-			dice2 = Math.floor(Math.random() * 6) + 1;
+	static CreateNewGame(type: GameType): Game {
+		if (type === null) type = GameType.LongNardy;
+		const game = new Game(type);
+		if (type === GameType.LongNardy) {
+			game.engine = new LongNardyEngine(game.EndGameWithWinner.bind(game));
 		}
-		return [dice1, dice2];
+		return game;
+	}
+
+	static ImportGame(data: ExportGame): Game {
+
+		let player1 = null;
+		let player2 = null;
+		if (data.player1 && data.player2) {
+			player1 = new Player(data.player1.isFirst);
+			player2 = new Player(data.player2.isFirst);
+		}
+
+		let board = null;
+		if (data.board !== null && data.board.blackBoard && data.board.whiteBoard) {
+			board = new Board(data.board.whiteBoard, data.board.blackBoard);
+		}
+
+		let gameType = data.gameType;
+		if (gameType === null) gameType = GameType.LongNardy;
+		const game = Game.CreateNewGame(gameType);
+		game.player1 = player1;
+		game.player2 = player2;
+		game.board = board;
+
+		if (data.ended) {
+			if (data.winner)
+				game.EndGameWithWinner(data.winner.isFirst);
+			else
+				game.EndGameWithWinner(null);
+		}
+
+		let moveState = null;
+		if (data.board && data.moveState) {
+			moveState = new MoveState(
+				data.moveState.moveNumber,
+				data.moveState.isPlayerWhite,
+				data.moveState.dices,
+				data.moveState.remainingMoves,
+				data.moveState.doneMoves
+			);
+			if (data.moveState.isEnded) {
+				moveState.endMove();
+			}
+			game.engine!.SetPossibleMoves(moveState, board!)
+		}
+
+		game.moveState = moveState;
+		return game;
 	}
 }
 
-export { Game, ExportGame };
+
+export { Game, GameType };

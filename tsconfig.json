@@ -4,6 +4,7 @@
     "module": "CommonJS",
     "moduleResolution": "node",
     "declaration": true,
+    "declarationMap": true,
     "allowJs": false,
     "outDir": "dist",
     "esModuleInterop": true,
@@ -11,6 +12,7 @@
     "strict": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
+    "resolveJsonModule": true
   },
   "include": [
     "src"
