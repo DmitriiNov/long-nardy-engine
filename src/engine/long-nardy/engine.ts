@@ -3,7 +3,7 @@ import Board from '../../board';
 import Move from '../../move';
 import MoveState from '../../moveState';
 import Player from '../../player';
-import {ValidationResult, validators} from './moveValidators';
+import { ValidationResult, validators } from './moveValidators';
 import MovesTreeNode from '../../movesTree';
 class LongNardyEngine implements Engine {
 	constructor(endGameCallback: (winner: boolean | null) => void) {
@@ -54,7 +54,7 @@ class LongNardyEngine implements Engine {
 		}
 		moveState.endMove();
 
-		const currPlayerFinished =	board.countPieces(moveState.isWhiteTurn()) === 0;
+		const currPlayerFinished = board.countPieces(moveState.isWhiteTurn()) === 0;
 		const oppositePlayerFinished = board.countPieces(!moveState.isWhiteTurn()) === 0;
 		if (currPlayerFinished && oppositePlayerFinished) {
 			this.endGameCallback(null);
@@ -84,7 +84,7 @@ class LongNardyEngine implements Engine {
 		return lastMove;
 	}
 
-	GetPossibleMoves(moveState: MoveState, board: Board): { [key: number]: number[] }  {
+	GetPossibleMoves(moveState: MoveState, board: Board): { [key: number]: number[] } {
 		const movesTree = moveState.getMovesTree();
 		if (movesTree === null) {
 			return {};
@@ -113,10 +113,7 @@ class LongNardyEngine implements Engine {
 	}
 
 	GetNewBoard(): Board {
-		return new Board(
-			Board.ObjectToArray(24, {0: 15}),
-			Board.ObjectToArray(24, {0: 15}),
-		);
+		return new Board(Board.ObjectToArray(24, { 0: 15 }), Board.ObjectToArray(24, { 0: 15 }));
 	}
 
 	SetPossibleMoves(moveState: MoveState, board: Board) {
@@ -129,14 +126,13 @@ class LongNardyEngine implements Engine {
 		const movesTree = new MovesTreeNode();
 		for (let i = 0; i < 24; i++) {
 			if (board.getCurrentBoard(moveState.isWhiteTurn())[i] === 0) continue;
-			
+
 			for (const permutation of permutations) {
 				const move: [number, number] = [i, i + permutation[0]];
 				const newMoveState = moveState.getCopy();
 				const newBoard = board.getBoardCopy();
 				const MoveValid = this.isMoveValid(newMoveState, newBoard, move);
-				if (!MoveValid.IsValid())
-					continue;
+				if (!MoveValid.IsValid()) continue;
 				newMoveState.removeFromRemainingMoves(permutation[0]);
 				newMoveState.addToDoneMoves(move);
 				newBoard.addPiece(moveState.isWhiteTurn(), move[1]);

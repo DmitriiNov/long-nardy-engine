@@ -23,7 +23,7 @@ class MoveState {
 	getDices(): [number, number] {
 		return this.dices;
 	}
-	
+
 	getMoveNumber(): number {
 		return this.moveNumber;
 	}
