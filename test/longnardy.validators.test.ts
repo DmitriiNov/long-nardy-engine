@@ -4,15 +4,14 @@ import MoveState from '../src/moveState';
 import Board from '../src/board';
 const trueVal = new ValidationResult('', true);
 
-
 class Brd {
 	board: Board;
 	constructor(a?: any, b?: any) {
 		if (a === undefined) {
-			a = Brd.ObjectToArray({0: 15})
+			a = Brd.ObjectToArray({ 0: 15 });
 		}
 		if (b === undefined) {
-			b = Brd.ObjectToArray({0: 15})
+			b = Brd.ObjectToArray({ 0: 15 });
 		}
 		this.board = new Board(a, b);
 	}
@@ -21,8 +20,6 @@ class Brd {
 		return Board.ObjectToArray(24, obj);
 	}
 }
-
-
 
 describe('Checking "IsMovePossible"', () => {
 	const validatorFunction = validators['IsMovePossible'];
@@ -178,10 +175,7 @@ describe('Checking "IsNoSixBlocked"', () => {
 	});
 
 	test('Six block 1', () => {
-		const board = new Brd(
-			Brd.ObjectToArray({ 0: 6, 3: 1, 7: 1, 8: 1, 9: 1, 10: 1, 11: 1 }),
-			Brd.ObjectToArray({ 0: 7, 11: 1, 13: 1 })
-		);
+		const board = new Brd(Brd.ObjectToArray({ 0: 6, 3: 1, 7: 1, 8: 1, 9: 1, 10: 1, 11: 1 }), Brd.ObjectToArray({ 0: 7, 11: 1, 13: 1 }));
 		let ms = new MoveState(12, true, [3, 6], [3, 6], []);
 		const result = validatorFunction(ms, board.board, [3, 6]);
 		expect(result?.IsValid()).toEqual(false);
@@ -209,10 +203,7 @@ describe('Checking "IsNoSixBlocked"', () => {
 	});
 
 	test('Six block 3 Opposite', () => {
-		const board = new Brd(
-			Brd.ObjectToArray({ 22: 1, 21: 1, 20: 1, 19: 1, 18: 1, 17: 0, 16: 1 }),
-			Brd.ObjectToArray({ 0: 14, 13: 1 })
-		);
+		const board = new Brd(Brd.ObjectToArray({ 22: 1, 21: 1, 20: 1, 19: 1, 18: 1, 17: 0, 16: 1 }), Brd.ObjectToArray({ 0: 14, 13: 1 }));
 		let ms = new MoveState(12, true, [1, 1], [1, 1, 1, 1], []);
 		const result = validatorFunction(ms, board.board, [16, 17]);
 		expect(result).toEqual(trueVal);
