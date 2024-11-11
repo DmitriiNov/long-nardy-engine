@@ -309,4 +309,11 @@ describe('Checking "AreThereNoAlternativeMoves"', () => {
 		const result = validatorFunction(ms, board.board, [21, 25]);
 		expect(result?.IsValid()).toEqual(false);
 	});
+
+	test('Biggest move goes', () => {
+		const board = new Brd(Brd.ObjectToArray({ 17: 1 }), Brd.ObjectToArray({ 7: 1, 8: 1, 10: 1, 11: 1,}));
+		let ms = new MoveState(12, true, [4, 1], [4, 1], []);
+		const result = validatorFunction(ms, board.board, [17, 18]);
+		expect(result?.IsValid()).toEqual(false);
+	});
 });
