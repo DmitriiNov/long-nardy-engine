@@ -70,7 +70,7 @@ const IsOnlyOnePieceFromHead: ValidatorFunction = (moveState, board, move) => {
 	const from = move[0];
 	if (from !== 0 || moveState.getDoneMoves().length === 0) return GetTrueValidationResult();
 
-	let doneHead = moveState.getDoneMoves().filter((doneMove) => doneMove[0] === 0).length;
+	const doneHead = moveState.getDoneMoves().filter((doneMove) => doneMove[0] === 0).length;
 
 	if (doneHead === 0) return GetTrueValidationResult();
 	if (doneHead > 1) return GetFalseValidationResult('[IsOnlyOnePieceFromHead] head has been done twice already');

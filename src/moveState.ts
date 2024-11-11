@@ -11,7 +11,7 @@ class MoveState {
 	private isEnded: boolean = false;
 	private movesTree: MovesTreeNode | null = null;
 
-	constructor(num: number, isWhite: boolean, dices: [number, number], remainingMoves: number[], doneMoves: [number, number][]) {
+	constructor(num: number, isWhite: boolean, dices: [number, number], remainingMoves: number[], doneMoves: Array<[number, number]>) {
 		this.moveNumber = num;
 		this.isPlayerWhite = isWhite;
 		this.dices = dices;
@@ -23,7 +23,7 @@ class MoveState {
 	getDices(): [number, number] {
 		return this.dices;
 	}
-	
+
 	getMoveNumber(): number {
 		return this.moveNumber;
 	}

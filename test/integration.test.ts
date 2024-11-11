@@ -44,7 +44,6 @@ describe('Make Game e2e testing', () => {
 
 		const game2 = Game.ImportGame(gameExport);
 		game = game2;
-
 	});
 
 	test('4 move from 4 with UNDO', () => {

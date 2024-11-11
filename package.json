@@ -1,6 +1,6 @@
 {
   "name": "long-nardy-engine",
-  "version": "0.2.0",
+  "version": "1.0.1",
   "description": "Long nardy game engine",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

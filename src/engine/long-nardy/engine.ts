@@ -3,7 +3,7 @@ import Board from '../../board';
 import Move from '../../move';
 import MoveState from '../../moveState';
 import Player from '../../player';
-import {ValidationResult, validators} from './moveValidators';
+import { ValidationResult, validators } from './moveValidators';
 import MovesTreeNode from '../../movesTree';
 class LongNardyEngine implements Engine {
 	constructor(endGameCallback: (winner: boolean | null) => void) {
@@ -13,26 +13,21 @@ class LongNardyEngine implements Engine {
 
 	MakeMove(moveState: MoveState, board: Board, move: Move): boolean {
 		if (moveState.isMoveEnded()) {
-			console.debug("MakeMove moveState.isMoveEnded()")
 			return false;
 		}
 		const movesTree = moveState.getMovesTree();
 		if (movesTree === null) {
-			console.debug("MakeMove movesTree === null")
 			return false;
 		}
 		const moves = movesTree.findIfCombinedMovePossible(move.from, move.to);
 		if (moves === null) {
-			console.debug("MakeMove moves === null")
 			return false;
 		}
-		console.debug("MakeMove moves", moves)
-		for (const move of moves) {
-			console.log("MakeMove move", move)
-			board.addPiece(moveState.isWhiteTurn(), move.to);
-			board.removePiece(moveState.isWhiteTurn(), move.from);
-			moveState.addToDoneMoves([move.from, move.to]);
-			moveState.removeFromRemainingMoves(move.to - move.from);
+		for (const mv of moves) {
+			board.addPiece(moveState.isWhiteTurn(), mv.to);
+			board.removePiece(moveState.isWhiteTurn(), mv.from);
+			moveState.addToDoneMoves([mv.from, mv.to]);
+			moveState.removeFromRemainingMoves(mv.to - mv.from);
 		}
 		this.SetPossibleMoves(moveState, board);
 		return true;
@@ -59,7 +54,7 @@ class LongNardyEngine implements Engine {
 		}
 		moveState.endMove();
 
-		const currPlayerFinished =	board.countPieces(moveState.isWhiteTurn()) === 0;
+		const currPlayerFinished = board.countPieces(moveState.isWhiteTurn()) === 0;
 		const oppositePlayerFinished = board.countPieces(!moveState.isWhiteTurn()) === 0;
 		if (currPlayerFinished && oppositePlayerFinished) {
 			this.endGameCallback(null);
@@ -89,7 +84,7 @@ class LongNardyEngine implements Engine {
 		return lastMove;
 	}
 
-	GetPossibleMoves(moveState: MoveState, board: Board): { [key: number]: number[] }  {
+	GetPossibleMoves(moveState: MoveState, board: Board): { [key: number]: number[] } {
 		const movesTree = moveState.getMovesTree();
 		if (movesTree === null) {
 			return {};
@@ -118,16 +113,11 @@ class LongNardyEngine implements Engine {
 	}
 
 	GetNewBoard(): Board {
-		return new Board(
-			Board.ObjectToArray(24, {0: 15}),
-			Board.ObjectToArray(24, {0: 15}),
-		);
+		return new Board(Board.ObjectToArray(24, { 0: 15 }), Board.ObjectToArray(24, { 0: 15 }));
 	}
 
 	SetPossibleMoves(moveState: MoveState, board: Board) {
 		const possibleMoves = this.findPossibleMoves(moveState, board);
-		console.log("SetPossibleMoves")
-		console.log(possibleMoves.printNode());
 		moveState.setMovesTree(possibleMoves);
 	}
 
@@ -136,14 +126,13 @@ class LongNardyEngine implements Engine {
 		const movesTree = new MovesTreeNode();
 		for (let i = 0; i < 24; i++) {
 			if (board.getCurrentBoard(moveState.isWhiteTurn())[i] === 0) continue;
-			
+
 			for (const permutation of permutations) {
 				const move: [number, number] = [i, i + permutation[0]];
 				const newMoveState = moveState.getCopy();
 				const newBoard = board.getBoardCopy();
 				const MoveValid = this.isMoveValid(newMoveState, newBoard, move);
-				if (!MoveValid.IsValid())
-					continue;
+				if (!MoveValid.IsValid()) continue;
 				newMoveState.removeFromRemainingMoves(permutation[0]);
 				newMoveState.addToDoneMoves(move);
 				newBoard.addPiece(moveState.isWhiteTurn(), move[1]);

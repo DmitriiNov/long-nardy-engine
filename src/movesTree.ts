@@ -2,7 +2,7 @@ import Move from './move';
 
 class MovesTreeNode {
 	move: [number, number] | null = null;
-	nextMoves: Array<MovesTreeNode> | null = null;
+	nextMoves: MovesTreeNode[] | null = null;
 
 	constructor(from?: number, to?: number) {
 		if (from !== undefined && to !== undefined) this.move = [from, to];
@@ -17,7 +17,7 @@ class MovesTreeNode {
 		this.nextMoves.push(mv);
 	}
 
-	static New(from?: number, to?: number, nextMoves?: Array<MovesTreeNode>): MovesTreeNode {
+	static New(from?: number, to?: number, nextMoves?: MovesTreeNode[]): MovesTreeNode {
 		const result = new MovesTreeNode(from, to);
 		if (nextMoves) result.nextMoves = nextMoves;
 		return result;
@@ -39,7 +39,7 @@ class MovesTreeNode {
 
 		if (this.nextMoves === null) return result;
 
-		for (let node of this.nextMoves) {
+		for (const node of this.nextMoves) {
 			if (node.move === null) continue;
 			const [from, to] = node.move;
 			if (result[from] === undefined) result[from] = [];
@@ -47,7 +47,7 @@ class MovesTreeNode {
 
 			if (node.nextMoves === null) continue;
 
-			for (let child of node.nextMoves) {
+			for (const child of node.nextMoves) {
 				result[from].push(...child.nodeToObject(to));
 			}
 		}
@@ -65,67 +65,22 @@ class MovesTreeNode {
 		const result = [to];
 		if (this.nextMoves === null) return result;
 
-		for (let child of this.nextMoves) {
+		for (const child of this.nextMoves) {
 			result.push(...child.nodeToObject(to));
 		}
 
 		return result;
 	}
 
-	//getPossibleMovesObject(): { [key: number]: number[] } {
-	//	if (this.move !== null) throw new Error('This is not root node');
-	//	return this.nodeToObject();
-	//}
-
-	// private nodeToObject(): { [key: number]: number[] } {
-	// 	const result: { [key: number]: number[] } = {};
-
-	// 	if (this.move !== null) result[this.move[0]] = [this.move[1]];
-
-	// 	this.childrenToObjects(result);
-
-	// 	if (this.move !== null) return result;
-
-	// 	for (const key in result) result[key] = Array.from(new Set(result[key])).sort((a, b) => a - b);
-
-	// 	return result;
-	// }
-
-	// private childrenToObjects(result: { [key: number]: number[] }): void {
-	// 	if (this.nextMoves === null) return;
-	// 	for (let node of this.nextMoves) {
-	// 		if (Array.isArray(this.move) && Array.isArray(node.move) && this.move[1] !== node.move[0]) //Вот сюда добавить эту строчку, дабы оно не гоняло все не связанные узлы
-	// 			continue;
-	// 		if (node.move && !Array.isArray(result[node.move[0]])) result[node.move[0]] = [];
-	// 		const nodeRes = node.nodeToObject();
-
-	// 		if (this.move === null || node.move === null || this.move[1] !== node.move[0]) {
-	// 			for (const key in nodeRes) {
-	// 				if (result[key] !== undefined) result[key].push(...nodeRes[key]);
-	// 			}
-	// 			continue;
-	// 		}
-	// 		result[this.move[0]].push(...nodeRes[node.move[0]]);
-	// 		for (const key in nodeRes) {
-	// 			if (key !== node.move[0].toString() && result[key] !== undefined) result[key].push(...nodeRes[key]);
-	// 		}
-	// 	}
-	// }
-
 	findIfCombinedMovePossible(from: number, to: number): Move[] | null {
 		if (this.move !== null) throw new Error('This is not root node');
 		const result = this.nodeToFind(from, to, []);
-		// console.log(`Check move from: ${from}, to: ${to}`)
-		// result?.forEach(
-		// 	(m) => console.log(`from: ${m.from}, to: ${m.to}`)
-		// )
-		// console.log("--------------")
 		return result;
 	}
 
 	private nodeToFind(from: number, to: number, moves: Move[]): Move[] | null {
 		if (this.nextMoves === null) return null;
-		for (let node of this.nextMoves) {
+		for (const node of this.nextMoves) {
 			const copy = [...moves];
 			if (!node.move) continue;
 			if (node.move[0] === from && node.move[1] === to) {
@@ -167,21 +122,21 @@ class MovesTreeNode {
 	}
 
 	// These function needed for bot
-	allMovesToArray(): [number, number][][] {
+	allMovesToArray(): Array<Array<[number, number]>> {
 		if (this.move !== null) throw new Error('This is not root node');
-		const result: [number, number][][] = this.convertToMovesArray();
+		const result = this.convertToMovesArray();
 		return result;
 	}
 
-	private convertToMovesArray(path: [number, number][] = []): [number, number][][] {
-		let result: [number, number][][] = [];
+	private convertToMovesArray(path: Array<[number, number]> = []): Array<Array<[number, number]>> {
+		let result: Array<Array<[number, number]>> = [];
 		if (this.move !== null) {
 			path = [...path, this.move];
 		}
 		if (this.nextMoves === null) {
 			if (path.length > 0) result.push(path);
 		} else {
-			for (let child of this.nextMoves) {
+			for (const child of this.nextMoves) {
 				result = result.concat(child.convertToMovesArray(path));
 			}
 		}
@@ -191,7 +146,6 @@ class MovesTreeNode {
 	static CreateMoveTreeFromJson(json: any): MovesTreeNode {
 		const node = new MovesTreeNode();
 		node.move = json.move;
-		console.debug(json.move);
 		if (!Array.isArray(json.nextMoves)) return node;
 		for (const nextMove of json.nextMoves) {
 			const childNode = MovesTreeNode.CreateMoveTreeFromJson(nextMove);

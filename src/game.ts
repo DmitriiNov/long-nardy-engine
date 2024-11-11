@@ -23,13 +23,12 @@ type ExportGame = {
 		isPlayerWhite: boolean;
 		moveNumber: number;
 		dices: [number, number];
-		doneMoves: [number, number][];
+		doneMoves: Array<[number, number]>;
 		remainingMoves: number[];
 		isEnded: boolean;
 	};
 	gameType: GameType;
 };
-
 
 class Game {
 	private readonly gameType: GameType;
@@ -44,8 +43,8 @@ class Game {
 	private winner: Player | null = null;
 	private ended: boolean = false;
 
-	private constructor(GameType: GameType) {
-		this.gameType = GameType;
+	private constructor(gameType: GameType) {
+		this.gameType = gameType;
 	}
 
 	private getDice(): number {
@@ -83,7 +82,7 @@ class Game {
 
 	StartMove(dices: [number, number] | null): [number, number] {
 		if (dices === null) {
-			dices = [this.getDice(), this.getDice()]
+			dices = [this.getDice(), this.getDice()];
 		}
 		if (this.ended) throw new Error('Game is ended');
 		if (this.board === null) throw new Error('Movestate or board is null');
@@ -112,12 +111,12 @@ class Game {
 		if (this.ended) return {};
 		if (this.moveState === null || this.board === null) return {};
 		return this.engine!.GetPossibleMoves(this.moveState, this.board);
-	};
+	}
 
 	InitGame(dices: [number, number] | null): [number, number] {
 		if (this.ended) throw new Error('Game is ended');
 		if (dices === null) {
-			dices = [this.getDice(), this.getDice()]
+			dices = [this.getDice(), this.getDice()];
 			while (dices[0] === dices[1]) {
 				dices[1] = this.getDice();
 			}
@@ -146,7 +145,6 @@ class Game {
 	}
 
 	static ImportGame(data: ExportGame): Game {
-
 		let player1 = null;
 		let player2 = null;
 		if (data.player1 && data.player2) {
@@ -167,10 +165,8 @@ class Game {
 		game.board = board;
 
 		if (data.ended) {
-			if (data.winner)
-				game.EndGameWithWinner(data.winner.isFirst);
-			else
-				game.EndGameWithWinner(null);
+			if (data.winner) game.EndGameWithWinner(data.winner.isFirst);
+			else game.EndGameWithWinner(null);
 		}
 
 		let moveState = null;
@@ -185,13 +181,12 @@ class Game {
 			if (data.moveState.isEnded) {
 				moveState.endMove();
 			}
-			game.engine!.SetPossibleMoves(moveState, board!)
+			game.engine!.SetPossibleMoves(moveState, board!);
 		}
 
 		game.moveState = moveState;
 		return game;
 	}
 }
-
 
 export { Game, GameType };
