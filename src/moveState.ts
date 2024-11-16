@@ -79,6 +79,9 @@ class MoveState {
 	}
 
 	setMovesTree(tree: MovesTreeNode | null) {
+		if (tree !== null) {
+			tree.filterMovesTree();
+		}
 		this.movesTree = tree;
 	}
 
