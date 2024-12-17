@@ -1,5 +1,6 @@
 import { describe, expect, test } from '@jest/globals';
 import { Game, GameType } from '../src/game';
+import MoveState from '../src/moveState';
 
 let game = Game.CreateNewGame(GameType.LongNardy);
 game.InitGame([6, 1]);
@@ -67,5 +68,71 @@ describe('Make Game e2e testing', () => {
 	test('Export and Import', () => {
 		const result = run(game.Export.bind(game), [3, 8]);
 		expect(result).toEqual(true);
+	});
+
+	test('Full move when chip can go away', () => {
+		let ms = new MoveState(12, false, [5, 2], [5, 2], []);
+		const g = Game.ImportGame({
+			player1: {isFirst: true, isWhite: true},
+			player2:{isFirst: false, isWhite: false},
+			board: {
+			whiteBoard:[
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				1,
+				1,
+				1,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				1,
+				4,
+				3,
+				1,
+				0,
+				1
+			],
+			blackBoard: [
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				1,
+				1,
+				2,
+				11,
+				0,
+				0,
+				0
+		  	],
+		},
+		ended: false,
+		moveState: {moveNumber:12, isPlayerWhite: false, dices: [5, 2], doneMoves: [], remainingMoves: [5, 2], isEnded: false},
+		gameType: GameType.LongNardy});
+		const moves = g.GetPossibleMoves();
+		expect(moves).toEqual({17: [19, 24]})
 	});
 });
