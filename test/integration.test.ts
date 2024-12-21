@@ -69,72 +69,6 @@ describe('Make Game e2e testing', () => {
 		const result = run(game.Export.bind(game), [3, 8]);
 		expect(result).toEqual(true);
 	});
-
-	test('Full move when chip can go away', () => {
-		let ms = new MoveState(12, false, [5, 2], [5, 2], []);
-		const g = Game.ImportGame({
-			player1: {isFirst: true, isWhite: true},
-			player2:{isFirst: false, isWhite: false},
-			board: {
-			whiteBoard:[
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				1,
-				1,
-				1,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				1,
-				4,
-				3,
-				1,
-				0,
-				1
-			],
-			blackBoard: [
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				1,
-				1,
-				2,
-				11,
-				0,
-				0,
-				0
-		  	],
-		},
-		ended: false,
-		moveState: {moveNumber:12, isPlayerWhite: false, dices: [5, 2], doneMoves: [], remainingMoves: [5, 2], isEnded: false},
-		gameType: GameType.LongNardy});
-		const moves = g.GetPossibleMoves();
-		expect(moves).toEqual({17: [19, 24]})
-	});
 });
 
 let game2 = Game.CreateNewGame(GameType.LongNardy);
@@ -189,5 +123,39 @@ describe('Make Game e2e testing for biggest move', () => {
 	test('Move to 4 should succeed', () => {
 		const result = run(game2.MakeMove.bind(game2), [17, 21]);
 		expect(result).toEqual(true);
+	});
+});
+
+
+let game3 = Game.CreateNewGame(GameType.LongNardy);
+game3.InitGame([6, 1]);
+
+describe('Make Game e2e testing for last move', () => {
+	test('Full move when chip can go away', () => {
+		let ms = new MoveState(12, false, [5, 2], [5, 2], []);
+		const g = Game.ImportGame({
+			player1: {isFirst: true, isWhite: true},
+			player2:{isFirst: false, isWhite: false},
+			board: {
+			whiteBoard:[
+				0,0,0,0,0,0,
+				0,0,0,1,1,1,
+				0,0,0,0,0,0,
+				1,4,3,1,0,1
+			],
+			blackBoard: [
+				0,0,0,0,0,0,
+				0,0,0,0,0,0,
+				0,0,0,0,0,1,
+				1,2,11,0,0,0
+			],
+		},
+		ended: false,
+		moveState: {moveNumber:12, isPlayerWhite: false, dices: [5, 2], doneMoves: [], remainingMoves: [5, 2], isEnded: false},
+		gameType: GameType.LongNardy});
+		const moves = g.GetPossibleMoves();
+		console.debug(g.GetMoveState()?.getMovesTree()?.printNode());
+		console.debug(moves);
+		expect(moves).toEqual({17: [19, 24]})
 	});
 });
